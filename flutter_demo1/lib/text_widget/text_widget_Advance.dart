@@ -3,49 +3,75 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-void main(List<String> args) {
-  runApp(Material());
+void main() {
+  runApp(const MyApp());
 }
 
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const AdvancedTextExample(),
+    );
+  }
+}
+
+// Model for user data
 class User {
   final String name;
   final String email;
+
   User({required this.name, required this.email});
-  factory User.fromJson(Map<String, dynamic> json){
-    return User({
-      name:'${json['name']['first']} ${json['name']['last']}',
-      email: json['email']);
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      name: '${json['name']['first']} ${json['name']['last']}',
+      email: json['email'],
+    );
   }
 }
 
-Future<User> fetchUser async {
-  //POS, GET, PUT, DELETE , PATCH,
-  final respone = await http.get(Uri.parse("https://randomuser.me/api/?inc=name,email"));
-  if(respone.statusCode == 200){
-    final jsonData = json.decode(respone.body);
+// API Service
+// API Service
+Future<User> fetchUser() async {
+  final response = await http.get(
+    Uri.parse('https://randomuser.me/api/?inc=name,email'),
+  );
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    // Fix: Access the first element of the results array
     final List<dynamic> results = jsonData['results'];
     return User.fromJson(results[0] as Map<String, dynamic>);
-  }else {
-    throw Exception("Failed to Load User");
+  } else {
+    throw Exception('Failed to load user');
   }
 }
 
-class AdvancedTextExample extends StatefulWidget{
+class AdvancedTextExample extends StatefulWidget {
   const AdvancedTextExample({super.key});
+
   @override
-  // TODO: implement key
-  State<AdvancedTextExample> createState() => _AdvancedTextEXampleState();
+  State<AdvancedTextExample> createState() => _AdvancedTextExampleState();
 }
-class _AdvancedTextEXampleState extends State<AdvancedTextExample> {
+
+class _AdvancedTextExampleState extends State<AdvancedTextExample> {
   late Future<User> futureUser;
 
   @override
-  void iniState(){
+  void initState() {
     super.initState();
     futureUser = fetchUser();
   }
+
   @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Info'),
@@ -67,7 +93,9 @@ class _AdvancedTextEXampleState extends State<AdvancedTextExample> {
                   Text.rich(
                     TextSpan(
                       style: const TextStyle(
-                          fontSize: 18.0, color: Colors.black87),
+                        fontSize: 18.0,
+                        color: Colors.black87,
+                      ),
                       children: [
                         const TextSpan(
                           text: 'Name: ',
@@ -88,15 +116,15 @@ class _AdvancedTextEXampleState extends State<AdvancedTextExample> {
                   Text.rich(
                     TextSpan(
                       style: const TextStyle(
-                          fontSize: 16.0, color: Colors.black87),
+                        fontSize: 16.0,
+                        color: Colors.black87,
+                      ),
                       children: [
                         const TextSpan(
                           text: 'Email: ',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        TextSpan(
-                          text: snapshot.data?.email ?? "",
-                        ),
+                        TextSpan(text: snapshot.data?.email ?? ""),
                       ],
                     ),
                     textAlign: TextAlign.center,
@@ -111,4 +139,3 @@ class _AdvancedTextEXampleState extends State<AdvancedTextExample> {
     );
   }
 }
-
