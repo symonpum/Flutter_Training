@@ -14,10 +14,10 @@ class ImageWidgetBasic extends StatelessWidget {
       body: Column(
         children: [
           Image.asset('assets/images/mice.jpeg'),
-          Image.network('https://picsum.photos/id/237/300/200', width: 220),
+          Image.network('https://picsum.photos/id/237/300/200', width: 520),
           Image.network(
             'https://picsum.photos/400/300?grayscale&blur=2',
-            width: 220,
+            width: 1220,
             //If error link:
             errorBuilder: (context, error, stackTrace) {
               return Text("Error");
@@ -32,7 +32,14 @@ class ImageWidgetBasic extends StatelessWidget {
                   if (loadingProgress == null) {
                     return child;
                   }
-                  return CircularProgressIndicator();
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                                (loadingProgress.expectedTotalBytes ?? 1)
+                          : null,
+                    ),
+                  );
                 },
           ),
         ],
