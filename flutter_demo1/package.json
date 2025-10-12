@@ -8,7 +8,8 @@
   "main": "index.js",
   "directories": {
     "lib": "lib",
-    "test": "test"
+    "test": "test",
+    "flutter_demo1": "flutter_demo1/lib/"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

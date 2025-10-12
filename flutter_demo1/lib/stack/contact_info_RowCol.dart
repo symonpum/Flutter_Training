@@ -11,7 +11,7 @@ class RowColumnSimple extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Simple Row\Column: Contact Info"),
+        title: Text("Simple RowColumn: Contact Info"),
         backgroundColor: Colors.teal.shade600,
       ),
       body: Column(

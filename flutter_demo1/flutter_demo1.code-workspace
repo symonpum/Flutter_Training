@@ -1,0 +1,32 @@
+{
+  "folders": [
+    {
+      "path": "."  // Points to the folder containing pubspec.yaml
+    }
+  ],
+  "settings": {
+    "dart.flutterSdkPath": "D:/Flutter_Programing/SDKs/Flutter_SDK",
+    "dart.projectSearchDepth": 5,
+    "dart.enableSdkFormatter": true,
+    "dart.debugExternalLibraries": false,
+    "dart.debugSdkLibraries": false
+  },
+  "launch": {
+    "configurations": [
+      {
+        "name": "Flutter Main (Auto Device)",
+        "type": "dart",
+        "request": "launch",
+        "program": "lib/main.dart",
+        "deviceId": "flutter"
+      },
+      {
+        "name": "Contact Info (Auto Device)",
+        "type": "dart",
+        "request": "launch",
+        "program": "lib/stack/contact_info_RowCol_Func.dart",
+        "deviceId": "flutter"
+      }
+    ]
+  }
+}

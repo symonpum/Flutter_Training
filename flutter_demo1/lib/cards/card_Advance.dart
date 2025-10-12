@@ -23,6 +23,8 @@ class CardAdvance extends StatelessWidget {
           //color: Colors.grey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Image.network(
                 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1170',
@@ -43,7 +45,7 @@ class CardAdvance extends StatelessWidget {
                 },
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 12.0),
+                padding: const EdgeInsets.only(left: 20.0),
                 child: Text(
                   "Heading 1 ",
                   textAlign: TextAlign.left,

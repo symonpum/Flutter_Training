@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_demo1/text_widget/ex3_texWgAdv.dart';
 
 void main() {
   runApp(MyApp());
@@ -7,7 +6,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,18 @@ class MyApp extends StatelessWidget {
           ),
         ),
         backgroundColor: Colors.blue,
-        body: Container(),
+        body: Container(
+          child: Center(
+            child: Text(
+              'Hello Flutter',
+              style: TextStyle(
+                fontSize: 36.0,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

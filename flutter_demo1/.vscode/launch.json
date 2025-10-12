@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter Main",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Contact Info",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/stack/contact_info_RowCol_Func.dart"
+    }
+  ]
+}

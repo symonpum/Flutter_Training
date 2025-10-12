@@ -1,0 +1,9 @@
+{
+  "dart.projectSearchDepth": 6,
+  "dart.flutterSdkPath": "D:/Flutter_Programing/SDKs/Flutter_SDK",
+  "dart.flutterHotReloadOnSave": "all",
+  "dart.flutterCreateOffline": true,
+  "dart.checkForSdkUpdates": true,
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "editor.codeActions.triggerOnFocusChange": true,
+}
