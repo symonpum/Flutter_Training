@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -91,18 +89,31 @@ class MyProfileCard extends StatelessWidget {
     );
   }
 
-  //profile Bio
+//profile Bio
   Positioned _buildProfileBio() {
     return Positioned(
       bottom: 80,
       left: 20,
       right: 20,
-      child: const Text(
-        'Profile Card Design Practice @Flutter.Com.\n'
-        'Design Beautiful App to practice your Idea\n'
-        'using Code into Reality!',
-        textAlign: TextAlign.left,
-        style: TextStyle(fontSize: 16, color: Colors.black87),
+      child: RichText(
+        text: TextSpan(
+          text: 'Profile Card Design Practice ',
+          style: TextStyle(fontSize: 16, color: Colors.black87),
+          children: [
+            TextSpan(
+              text: '@Flutter.Com.\n',
+              style: TextStyle(fontSize: 16, color: Colors.lightBlueAccent),
+            ),
+            TextSpan(
+              text: 'Design Beautiful App to practice your Idea\n',
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            TextSpan(
+              text: 'using Code into Reality!',
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+          ],
+        ),
       ),
     );
   }
