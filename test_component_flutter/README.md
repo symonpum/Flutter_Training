@@ -1,4 +1,4 @@
-# ecommerce_app
+# test_component_flutter
 
 A new Flutter project.
 
