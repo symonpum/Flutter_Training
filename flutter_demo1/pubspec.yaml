@@ -1,0 +1,63 @@
+# Project name (must be lowercase, underscores allowed)
+name: flutter_demo1
+
+# Short description of your project (shows up on pub.dev if published)
+description: A new Flutter project.
+
+# Prevents accidental publishing to pub.dev
+publish_to: 'none'
+
+# Version format: major.minor.patch+build
+# Example: 1.0.0+1 → version 1.0.0, build 1
+version: 1.0.0+1
+
+environment:
+  # Dart SDK version constraint (works with >=3.3.0 but <4.0.0)
+  sdk: ">=3.3.0 <4.0.0"
+
+  # Minimum Flutter version required
+  flutter: ">=3.19.0"
+
+dependencies:
+  # Core Flutter SDK dependency (required for every Flutter app)
+  flutter:
+    sdk: flutter
+
+  # Cupertino icons (iOS-style icons, like add, back, settings)
+  cupertino_icons: ^1.0.8
+  
+
+  # HTTP client library for making REST API calls
+  http: ^1.5.0
+  audioplayers: ^6.5.1
+  font_awesome_flutter: ^10.10.0
+
+dev_dependencies:
+  # For writing Flutter unit/widget/integration tests
+  flutter_test:
+    sdk: flutter
+
+  # Official recommended lint rules (code style checks)
+  flutter_lints: ^5.0.0
+
+flutter:
+  # Ensures Material Icons (default Flutter icons) are bundled
+  uses-material-design: true
+
+  # Assets (images, SVGs, etc.) that you want bundled in the app
+  assets:
+    - assets/images/   # Folder for images (png, jpg, etc.)
+   # - assets/svg/      # Folder for SVG files
+    - assets/fonts/    # Folder for custom fonts (TTF, OTF)
+          # Folder for sound files (wav, mp3, etc.)
+    - assets/sounds/
+  
+
+
+  fonts: 
+     - family: KhmerOSMuolPali
+       fonts:
+         - asset: assets/fonts/KhmerOS_muolpali.ttf
+     - family: Krasar
+       fonts:
+         - asset: assets/fonts/KrasarRegular.ttf

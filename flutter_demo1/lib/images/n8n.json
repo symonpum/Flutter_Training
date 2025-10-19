@@ -1,0 +1,133 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Read Unsummarized Messages",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [200, 300],
+      "parameters": {
+        "sheetId": "14FBVDDJfG7WkHY1x-aZy0Y6eIVrwnT_q2bVkUjQYHgw",
+        "range": "Sheet1!A1:Z",
+        "valueRenderMode": "UNFORMATTED_VALUE",
+        "dataStartRow": 2,
+        "keyRow": 1,
+        "filter": {
+          "conditions": [
+            {
+              "field": "summarized",
+              "operation": "equal",
+              "value": "={{false}}"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q5JkQ3Dtq0ajov1t",
+          "name": "Google Sheets"
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Group & Format by Group",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [400, 300],
+      "parameters": {
+        "functionCode": "const groupedByGroup = {};\n\nfor (const item of items) {\n  const groupId = item.json.group_id;\n  const chatId = item.json.chat_id;\n  const user = item.json.user_name || 'Unknown';\n  const content = item.json.message_text || '';\n  const type = item.json.content_type || 'other';\n\n  if (!groupedByGroup[groupId]) {\n    groupedByGroup[groupId] = {\n      chatId,\n      users: {}\n    };\n  }\n\n  const group = groupedByGroup[groupId];\n  if (!group.users[user]) {\n    group.users[user] = {\n      messages: [],\n      photos: 0,\n      voices: 0,\n      others: 0\n    };\n  }\n\n  if (type === 'text') {\n    group.users[user].messages.push(content);\n  } else if (type === 'photo') {\n    group.users[user].photos++;\n  } else if (type === 'voice') {\n    group.users[user].voices++;\n  } else {\n    group.users[user].others++;\n  }\n}\n\nconst now = new Date();\nconst formattedDate = now.toLocaleDateString('km-KH', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'\n});\nconst formattedTime = now.toLocaleTimeString('km-KH', {\n  hour: '2-digit', minute: '2-digit'\n});\nconst timestamp = `🗓 សារប្រមូលនៅថ្ងៃ ${formattedDate} ម៉ោង ${formattedTime}\\n\\n`;\nconst header = `📋 សារដែលបានផ្ញើតាម Telegram\\n\\n`;\n\nconst output = [];\n\nfor (const [groupId, group] of Object.entries(groupedByGroup)) {\n  const blocks = [];\n\n  for (const [user, data] of Object.entries(group.users)) {\n    let block = `${user} បានផ្ញើសារ៖\\n`;\n    data.messages.forEach((msg, i) => {\n      block += `${i + 1}. ${msg}\\n`;\n    });\n\n    const media = [];\n    if (data.photos) media.push(`🖼️ រូបភាព ${data.photos}`);\n    if (data.voices) media.push(`🔊 សំឡេង ${data.voices}`);\n    if (data.others) media.push(`📎 ផ្សេងៗ ${data.others}`);\n    if (media.length) block += `📎 ${media.join(', ')}`;\n\n    blocks.push(block.trim());\n  }\n\n  output.push({\n    json: {\n      group_id: groupId,\n      chat_id: group.chatId,\n      summary: timestamp + header + blocks.join('\\n\\n')\n    }\n  });\n}\n\nreturn output;"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [600, 300],
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{$json.chat_id}}",
+        "text": "={{$json.summary}}"
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "WKvxldcu5RrEJty9",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Mark as Summarized",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [800, 300],
+      "parameters": {
+        "sheetId": "14FBVDDJfG7WkHY1x-aZy0Y6eIVrwnT_q2bVkUjQYHgw",
+        "range": "Sheet1!A1:Z",
+        "valueRenderMode": "UNFORMATTED_VALUE",
+        "dataStartRow": 2,
+        "keyRow": 1,
+        "updateFields": {
+          "summarized": "={{true}}"
+        },
+        "filter": {
+          "conditions": [
+            {
+              "field": "group_id",
+              "operation": "equal",
+              "value": "={{$json.group_id}}"
+            },
+            {
+              "field": "summarized",
+              "operation": "equal",
+              "value": "={{false}}"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q5JkQ3Dtq0ajov1t",
+          "name": "Google Sheets"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Read Unsummarized Messages": {
+      "main": [
+        [
+          {
+            "node": "Group & Format by Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Group & Format by Group": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Mark as Summarized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

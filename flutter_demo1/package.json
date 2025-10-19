@@ -1,0 +1,20 @@
+{
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "name": "flutter_demo1",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test",
+    "flutter_demo1": "flutter_demo1/lib/"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
