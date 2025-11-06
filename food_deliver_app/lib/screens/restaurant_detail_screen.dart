@@ -44,6 +44,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         actions: [
+          // ✅ LIVE CART BADGE
           ValueListenableBuilder<CartProvider>(
             valueListenable: CartProvider.instanceNotifier,
             builder: (context, cart, _) {
@@ -59,6 +60,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                       );
                     },
                   ),
+                  // Show badge with total quantity
                   if (cart.totalItems > 0)
                     Positioned(
                       right: 6,
@@ -294,8 +296,27 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                                 return FoodItemCard(
                                   item: item,
                                   onAdd: () {
-                                    CartProvider.instanceNotifier.value.addItem(
+                                    //passing restaurant info
+                                    CartProvider().addItem(
                                       item,
+                                      qty: 1,
+                                      restaurantId: r.id, // Pass restaurant ID
+                                      restaurantName:
+                                          r.name, //  Pass restaurant name
+                                      minOrder:
+                                          r.minOrder, // Pass minimum order
+                                    );
+
+                                    // Show feedback
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${item.name} added to cart',
+                                        ),
+                                        duration: const Duration(
+                                          milliseconds: 800,
+                                        ),
+                                      ),
                                     );
                                   },
                                 );
