@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import '../models/food_item.dart';
 import '../models/restaurant.dart';
-import '../screens/reviews_screen.dart';
+import '../providers/cart_provider.dart';
 import '../services/restaurant_service.dart';
 import '../widgets/food_item_card.dart';
-import '../screens/reviews_screen.dart';
+import 'cart_screen.dart';
+import 'reviews_screen.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final Restaurant restaurant;
+
   const RestaurantDetailScreen({super.key, required this.restaurant});
 
   @override
@@ -34,10 +36,57 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(r.name),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
+        actions: [
+          ValueListenableBuilder<CartProvider>(
+            valueListenable: CartProvider.instanceNotifier,
+            builder: (context, cart, _) {
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CartScreen()),
+                      );
+                    },
+                  ),
+                  if (cart.totalItems > 0)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1),
+                        ),
+                        child: Text(
+                          '${cart.totalItems}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
+
       body: FutureBuilder<List<FoodItem>>(
         future: _menuFuture,
         builder: (context, snapshot) {
@@ -64,21 +113,26 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Banner image
-                SizedBox(
-                  height: 200,
-                  width: double.infinity,
-                  child: Image.network(
-                    r.imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.grey.shade200,
-                      child: const Icon(
-                        Icons.restaurant,
-                        size: 48,
-                        color: Colors.grey,
+                Stack(
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      width: double.infinity,
+                      child: Image.network(
+                        r.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Colors.grey.shade200,
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Icons.restaurant,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
 
                 Padding(
@@ -131,7 +185,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
                       const SizedBox(height: 6),
 
-                      //Restaurant description
+                      // Restaurant description
                       Text(
                         r.description,
                         style: const TextStyle(
@@ -166,7 +220,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
                       const SizedBox(height: 12),
 
-                      // Delivery, prepareation , minimum cards
+                      // Delivery, preparation, minimum cards
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
@@ -224,7 +278,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                       ),
 
                       SizedBox(
-                        height: 400, // fixed height for TabBarView
+                        height: 400,
                         child: TabBarView(
                           controller: _tabController,
                           children: _categories.map((cat) {
@@ -237,13 +291,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                                   const SizedBox(height: 12),
                               itemBuilder: (context, index) {
                                 final item = items[index];
-                                // FoodItemCards
                                 return FoodItemCard(
                                   item: item,
                                   onAdd: () {
-                                    // Add to cart logic
-                                    //_addItemToCart(item, cartProvider);
-                                    //
+                                    CartProvider.instanceNotifier.value.addItem(
+                                      item,
+                                    );
                                   },
                                 );
                               },
@@ -259,6 +312,22 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
           );
         },
       ),
+      // floatingActionButton: ValueListenableBuilder<CartProvider>(
+      //   valueListenable: CartProvider.instanceNotifier,
+      //   builder: (context, cart, _) {
+      //     return FloatingActionButton.extended(
+      //       onPressed: () {
+      //         Navigator.push(
+      //           context,
+      //           MaterialPageRoute(builder: (_) => const CartScreen()),
+      //         );
+      //       },
+      //       icon: const Icon(Icons.shopping_cart),
+      //       label: Text('${cart.totalItems}'),
+      //       backgroundColor: Colors.green,
+      //     );
+      //   },
+      // ),
     );
   }
 }
