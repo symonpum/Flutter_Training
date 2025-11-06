@@ -1,19 +1,26 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../models/food_item.dart';
 
 class CartProvider {
   CartProvider._internal();
   static final CartProvider _instance = CartProvider._internal();
+
+  /// Notifies widgets when cart changes
   static final ValueNotifier<CartProvider> instanceNotifier = ValueNotifier(
     _instance,
   );
+
   factory CartProvider() => _instance;
 
-  final Map<String, _Line> _items = {};
+  final Map<String, CartLine> _items = {};
 
-  List<_Line> get items => _items.values.toList();
-  double get subtotal => _items.values.fold(0.0, (s, l) => s + l.totalPrice);
-  int get totalItems => _items.values.fold(0, (s, l) => s + l.quantity);
+  List<CartLine> get items => _items.values.toList();
+
+  double get subtotal =>
+      _items.values.fold(0.0, (sum, line) => sum + line.totalPrice);
+
+  int get totalItems =>
+      _items.values.fold(0, (sum, line) => sum + line.quantity);
 
   void addItem(FoodItem item, {int qty = 1, String? note}) {
     final key = item.id;
@@ -21,7 +28,7 @@ class CartProvider {
       _items[key]!.quantity += qty;
       if (note != null) _items[key]!.note = note;
     } else {
-      _items[key] = _Line(item: item, quantity: qty, note: note);
+      _items[key] = CartLine(item: item, quantity: qty, note: note);
     }
     instanceNotifier.value = _instance;
   }
@@ -45,10 +52,12 @@ class CartProvider {
   }
 }
 
-class _Line {
+class CartLine {
   final FoodItem item;
   int quantity;
   String? note;
-  _Line({required this.item, this.quantity = 1, this.note});
+
+  CartLine({required this.item, this.quantity = 1, this.note});
+
   double get totalPrice => item.price * quantity;
 }
