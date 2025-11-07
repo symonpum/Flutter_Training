@@ -19,14 +19,16 @@ class OrderSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
+      // Prevent back navigation to checkout
       onWillPop: () async => false,
       child: Scaffold(
+        backgroundColor: Colors.grey.shade100,
         body: SingleChildScrollView(
           child: Column(
             children: [
               const SizedBox(height: 60),
 
-              // Success icon
+              // ✅ Success Icon
               Container(
                 width: 120,
                 height: 120,
@@ -34,18 +36,18 @@ class OrderSuccessScreen extends StatelessWidget {
                   color: Colors.green.shade50,
                   shape: BoxShape.circle,
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
                     Icons.check_circle,
                     size: 100,
-                    color: Colors.green.shade400,
+                    color: Colors.green,
                   ),
                 ),
               ),
 
               const SizedBox(height: 24),
 
-              // Success message
+              // ✅ Success Message
               const Text(
                 'Order Placed Successfully!',
                 style: TextStyle(
@@ -54,21 +56,16 @@ class OrderSuccessScreen extends StatelessWidget {
                   color: Colors.green,
                 ),
               ),
-
               const SizedBox(height: 8),
-
-              Text(
-                'Thank you for your order! We\'re preparing it with care.',
+              const Text(
+                "Thank you for your order! We're preparing it with care.",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
 
               const SizedBox(height: 32),
 
-              // Order details card
+              // ✅ Order Details Card
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(16),
@@ -85,28 +82,20 @@ class OrderSuccessScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
+                    _detailRow(Icons.receipt, 'Order ID', orderId),
+                    const Divider(height: 16),
+                    _detailRow(Icons.restaurant, 'Restaurant', restaurantName),
+                    const Divider(height: 16),
                     _detailRow(
-                      icon: Icons.receipt,
-                      label: 'Order ID',
-                      value: orderId,
+                      Icons.schedule,
+                      'Estimated Delivery',
+                      '$deliveryTime minutes',
                     ),
                     const Divider(height: 16),
                     _detailRow(
-                      icon: Icons.restaurant,
-                      label: 'Restaurant',
-                      value: restaurantName,
-                    ),
-                    const Divider(height: 16),
-                    _detailRow(
-                      icon: Icons.schedule,
-                      label: 'Estimated Delivery',
-                      value: '$deliveryTime minutes',
-                    ),
-                    const Divider(height: 16),
-                    _detailRow(
-                      icon: Icons.payment,
-                      label: 'Total Amount',
-                      value: '\$${total.toStringAsFixed(2)}',
+                      Icons.payment,
+                      'Total Amount',
+                      '\$${total.toStringAsFixed(2)}',
                       isAmount: true,
                     ),
                   ],
@@ -115,7 +104,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // Track Order button
+              // ✅ Track Order Button (filled)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
@@ -124,9 +113,9 @@ class OrderSuccessScreen extends StatelessWidget {
                     onPressed: () {
                       final cart = CartProvider();
                       final foodItems = cart.items
-                          .map((cartLine) => cartLine.item)
+                          .map((line) => line.item)
                           .toList();
-                      
+
                       cart.clear();
                       Navigator.pushReplacement(
                         context,
@@ -154,7 +143,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Back to home button
+              // ✅ Back to Home Button (outlined)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
@@ -162,9 +151,7 @@ class OrderSuccessScreen extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       CartProvider().clear();
-                      Navigator.of(context).popUntil(
-                        (route) => route.isFirst,
-                      );
+                      Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     icon: const Icon(Icons.home),
                     label: const Text('Back to Home'),
@@ -188,10 +175,11 @@ class OrderSuccessScreen extends StatelessWidget {
     );
   }
 
-  Widget _detailRow({
-    required IconData icon,
-    required String label,
-    required String value,
+  // ✅ Helper for detail rows
+  Widget _detailRow(
+    IconData icon,
+    String label,
+    String value, {
     bool isAmount = false,
   }) {
     return Row(
@@ -204,10 +192,7 @@ class OrderSuccessScreen extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.black54),
               ),
               const SizedBox(height: 4),
               Text(

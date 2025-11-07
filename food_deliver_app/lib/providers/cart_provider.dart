@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../models/food_item.dart';
 
@@ -5,8 +6,6 @@ class CartProvider {
   CartProvider._internal();
   static final CartProvider _instance = CartProvider._internal();
 
-  /// Notifies widgets when cart changes - LIVE UPDATES
-  /// Using ValueNotifier only (follows course guidelines)
   static final ValueNotifier<CartProvider> instanceNotifier = ValueNotifier(
     _instance,
   );
@@ -17,6 +16,16 @@ class CartProvider {
   String? _restaurantId;
   String? _restaurantName;
   double _minimumOrder = 0.0;
+
+  double _taxRate = 0.08; // default tax
+  double _deliveryFee = 2.99; // default delivery fee
+  double _platformFee = 0.0; // default platform fee
+
+  // ==================== EVENTS / LOGGING ====================
+  void Function(FoodItem item, int qty)? onItemAdded;
+  void Function(String id)? onItemRemoved;
+  void Function(String id, int qty)? onQuantityChanged;
+  void Function()? onCartCleared;
 
   // ==================== GETTERS ====================
   List<CartLine> get items => _items.values.toList();
@@ -32,22 +41,15 @@ class CartProvider {
 
   int get itemCount => _items.length;
 
-  // Calculate delivery fee (flat $2.99)
-  double get deliveryFee => 2.99;
+  double get tax => subtotal * _taxRate;
+  double get deliveryFee => _deliveryFee;
+  double get platformFee => _platformFee;
+  double get total => subtotal + deliveryFee + tax + platformFee;
 
-  // Calculate tax (8%)
-  double get tax => subtotal * 0.08;
-
-  // Calculate total
-  double get total => subtotal + deliveryFee + tax;
-
-  // Check if below minimum order
   bool get isBelowMinimum => subtotal < _minimumOrder;
-
   bool get isEmpty => _items.isEmpty;
 
   // ==================== ADD ITEM ====================
-  /// Add item to cart with restaurant context
   void addItem(
     FoodItem item, {
     int qty = 1,
@@ -56,7 +58,6 @@ class CartProvider {
     String? restaurantName,
     double minOrder = 0.0,
   }) {
-    // If from different restaurant, clear cart
     if (_restaurantId != null && _restaurantId != restaurantId) {
       _items.clear();
     }
@@ -73,12 +74,12 @@ class CartProvider {
       _items[key] = CartLine(item: item, quantity: qty, note: note);
     }
 
-    // ✅ TRIGGER LIVE UPDATE - ValueNotifier only
+    if (onItemAdded != null) onItemAdded!(item, qty);
+
     _notifyListeners();
   }
 
   // ==================== REMOVE ITEM ====================
-  /// Remove item from cart
   void removeItem(String id) {
     _items.remove(id);
     if (_items.isEmpty) {
@@ -87,21 +88,22 @@ class CartProvider {
       _minimumOrder = 0.0;
     }
 
-    // ✅ TRIGGER LIVE UPDATE
+    if (onItemRemoved != null) onItemRemoved!(id);
+
     _notifyListeners();
   }
 
   // ==================== CHANGE QUANTITY ====================
-  /// Change quantity by delta (increase or decrease)
   void changeQuantity(String id, int delta) {
     final line = _items[id];
     if (line == null) return;
 
     line.quantity += delta;
-
-    // Remove item if quantity becomes 0 or less
     if (line.quantity <= 0) {
       _items.remove(id);
+      if (onItemRemoved != null) onItemRemoved!(id);
+    } else {
+      if (onQuantityChanged != null) onQuantityChanged!(id, line.quantity);
     }
 
     if (_items.isEmpty) {
@@ -110,41 +112,86 @@ class CartProvider {
       _minimumOrder = 0.0;
     }
 
-    // ✅ TRIGGER LIVE UPDATE
     _notifyListeners();
   }
 
-  // ==================== UPDATE NOTE ====================
-  /// Update special instructions for item
-  void updateNote(String id, String note) {
-    if (_items.containsKey(id)) {
-      _items[id]!.note = note.isNotEmpty ? note : null;
-
-      // ✅ TRIGGER LIVE UPDATE
-      _notifyListeners();
-    }
-  }
-
   // ==================== CLEAR CART ====================
-  /// Clear entire cart
   void clear() {
     _items.clear();
     _restaurantId = null;
     _restaurantName = null;
     _minimumOrder = 0.0;
 
-    // ✅ TRIGGER LIVE UPDATE
+    if (onCartCleared != null) onCartCleared!();
+
     _notifyListeners();
   }
 
+  // ==================== NOTES ====================
+  void updateNote(String id, String note) {
+    if (_items.containsKey(id)) {
+      _items[id]!.note = note.isNotEmpty ? note : null;
+      _notifyListeners();
+    }
+  }
+
+  // ==================== FEES ====================
+  void setTaxRate(double rate) {
+    _taxRate = rate;
+    _notifyListeners();
+  }
+
+  void setDeliveryFee(double fee) {
+    _deliveryFee = fee;
+    _notifyListeners();
+  }
+
+  void setPlatformFee(double fee) {
+    _platformFee = fee;
+    _notifyListeners();
+  }
+
+  // ==================== SERIALIZATION ====================
+  Map<String, dynamic> toJson() {
+    return {
+      'restaurantId': _restaurantId,
+      'restaurantName': _restaurantName,
+      'minimumOrder': _minimumOrder,
+      'taxRate': _taxRate,
+      'deliveryFee': _deliveryFee,
+      'platformFee': _platformFee,
+      'items': _items.map((key, line) => MapEntry(key, line.toJson())),
+    };
+  }
+
+  static CartProvider fromJson(Map<String, dynamic> json) {
+    final cart = CartProvider();
+    cart._restaurantId = json['restaurantId'];
+    cart._restaurantName = json['restaurantName'];
+    cart._minimumOrder = (json['minimumOrder'] ?? 0.0).toDouble();
+    cart._taxRate = (json['taxRate'] ?? 0.0).toDouble();
+    cart._deliveryFee = (json['deliveryFee'] ?? 0.0).toDouble();
+    cart._platformFee = (json['platformFee'] ?? 0.0).toDouble();
+
+    final itemsJson = json['items'] as Map<String, dynamic>? ?? {};
+    cart._items.clear();
+    itemsJson.forEach((key, value) {
+      cart._items[key] = CartLine.fromJson(value);
+    });
+
+    cart._notifyListeners();
+    return cart;
+  }
+
+  String toJsonString() => jsonEncode(toJson());
+
+  static CartProvider fromJsonString(String jsonStr) =>
+      fromJson(jsonDecode(jsonStr));
+
   // ==================== HELPER ====================
-  /// Get item by id
   CartLine? getItem(String id) => _items[id];
 
-  /// Private method to notify all listeners using ValueNotifier
   void _notifyListeners() {
-    // Update ValueNotifier for ValueListenableBuilder widgets
-    // This triggers immediate rebuild for all listeners
     instanceNotifier.value = _instance;
   }
 }
@@ -157,6 +204,26 @@ class CartLine {
   CartLine({required this.item, this.quantity = 1, this.note});
 
   double get totalPrice => item.price * quantity;
+
+  CartLine copyWith({int? quantity, String? note}) {
+    return CartLine(
+      item: item,
+      quantity: quantity ?? this.quantity,
+      note: note ?? this.note,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'item': item.toJson(), 'quantity': quantity, 'note': note};
+  }
+
+  static CartLine fromJson(Map<String, dynamic> json) {
+    return CartLine(
+      item: FoodItem.fromJson(json['item']),
+      quantity: json['quantity'] ?? 1,
+      note: json['note'],
+    );
+  }
 
   @override
   bool operator ==(Object other) =>
