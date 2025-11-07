@@ -43,11 +43,9 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
-      body: ValueListenableBuilder<CartProvider>(
-        valueListenable: CartProvider.instanceNotifier,
-        builder: (context, cart, _) {
-          final items = cart.items;
-
+      body: ValueListenableBuilder<List<CartLine>>(
+        valueListenable: _cartProvider.cartNotifier,
+        builder: (context, items, _) {
           if (items.isEmpty) {
             return Center(
               child: Column(
@@ -107,7 +105,7 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      cart.restaurantName ?? 'Restaurant',
+                      _cartProvider.restaurantName ?? 'Restaurant',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -134,15 +132,16 @@ class _CartScreenState extends State<CartScreen> {
                   color: Colors.white,
                   border: Border(top: BorderSide(color: Colors.grey.shade200)),
                 ),
-                child: ValueListenableBuilder<CartProvider>(
-                  valueListenable: CartProvider.instanceNotifier,
-                  builder: (context, cart, _) {
-                    final double subtotal = cart.subtotal;
-                    final double tax = cart.tax;
-                    final double deliveryFee = cart.deliveryFee;
-                    final double platformFee = cart.platformFee;
-                    final double total = cart.total;
-                    final bool isBelowMinimum = cart.isBelowMinimum;
+                child: ValueListenableBuilder<List<CartLine>>(
+                  valueListenable: _cartProvider.cartNotifier,
+                  builder: (context, cartItems, _) {
+                    final double subtotal = _cartProvider.subtotal;
+                    final double tax = _cartProvider.tax;
+                    final double deliveryFee = _cartProvider.deliveryFee;
+                    final double platformFee = _cartProvider.platformFee;
+                    final double total = _cartProvider.total;
+                    final bool isBelowMinimum = _cartProvider.isBelowMinimum;
+                    final double minimumOrder = _cartProvider.minimumOrder;
 
                     return Column(
                       children: [
@@ -171,7 +170,7 @@ class _CartScreenState extends State<CartScreen> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    'Minimum order: \$${cart.minimumOrder.toStringAsFixed(2)}. Add \$${(cart.minimumOrder - subtotal).toStringAsFixed(2)} more.',
+                                    'Minimum order: \$${minimumOrder.toStringAsFixed(2)}. Add \$${(minimumOrder - subtotal).toStringAsFixed(2)} more.',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.orange.shade700,
@@ -297,8 +296,7 @@ class _CartScreenState extends State<CartScreen> {
                                     final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            const CheckoutScreen(), // 👈 navigate here
+                                        builder: (_) => const CheckoutScreen(),
                                       ),
                                     );
 
@@ -307,7 +305,6 @@ class _CartScreenState extends State<CartScreen> {
                                       // e.g. clear cart, show confirmation, etc.
                                     }
                                   },
-
                             child: const Text(
                               'Proceed to Checkout',
                               style: TextStyle(

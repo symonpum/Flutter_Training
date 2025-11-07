@@ -44,10 +44,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         actions: [
-          // ✅ LIVE CART BADGE
-          ValueListenableBuilder<CartProvider>(
-            valueListenable: CartProvider.instanceNotifier,
-            builder: (context, cart, _) {
+          // LIVE update CART BADGE using Observer Pattern Singleton
+          ValueListenableBuilder<List<CartLine>>(
+            valueListenable: CartProvider().cartNotifier,
+            builder: (context, items, _) {
+              final cart = CartProvider();
               return Stack(
                 alignment: Alignment.topRight,
                 children: [
@@ -334,7 +335,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         },
       ),
       // floatingActionButton: ValueListenableBuilder<CartProvider>(
-      //   valueListenable: CartProvider.instanceNotifier,
+      //   valueListenable: CartProvider().cartNotifier,
       //   builder: (context, cart, _) {
       //     return FloatingActionButton.extended(
       //       onPressed: () {

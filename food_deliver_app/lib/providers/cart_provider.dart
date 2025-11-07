@@ -1,45 +1,52 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../models/food_item.dart';
 
+// GoF Pattern: Singleton & Observer
+// Singleton: Ensures a single, globally accessible cart state throughout the app.
+// Observer: ValueNotifier acts as the "Subject". UI widgets listen to it and rebuild upon changes.
 class CartProvider {
-  CartProvider._internal();
+  // --- Singleton Implementation sample from ecommerce App---
   static final CartProvider _instance = CartProvider._internal();
 
-  static final ValueNotifier<CartProvider> instanceNotifier = ValueNotifier(
-    _instance,
-  );
+  factory CartProvider() {
+    return _instance;
+  }
 
-  factory CartProvider() => _instance;
+  CartProvider._internal();
 
-  final Map<String, CartLine> _items = {};
+  // --- Observer Pattern: ValueNotifier as Subject ---
+  // UI widgets listen to this notifier and rebuild when cart changes
+  final ValueNotifier<List<CartLine>> cartNotifier = ValueNotifier([]);
+
+  // Restaurant context
   String? _restaurantId;
   String? _restaurantName;
   double _minimumOrder = 0.0;
 
-  double _taxRate = 0.08; // default tax
-  double _deliveryFee = 2.99; // default delivery fee
-  double _platformFee = 0.0; // default platform fee
+  // Fees & Tax
+  double _taxRate = 0.08;
+  double _deliveryFee = 2.99;
+  double _platformFee = 0.0;
 
-  // ==================== EVENTS / LOGGING ====================
+  // Event callbacks for logging/analytics
   void Function(FoodItem item, int qty)? onItemAdded;
   void Function(String id)? onItemRemoved;
   void Function(String id, int qty)? onQuantityChanged;
   void Function()? onCartCleared;
 
   // ==================== GETTERS ====================
-  List<CartLine> get items => _items.values.toList();
+  List<CartLine> get items => cartNotifier.value;
   String? get restaurantId => _restaurantId;
   String? get restaurantName => _restaurantName;
   double get minimumOrder => _minimumOrder;
 
   double get subtotal =>
-      _items.values.fold(0.0, (sum, line) => sum + line.totalPrice);
+      cartNotifier.value.fold(0.0, (sum, line) => sum + line.totalPrice);
 
   int get totalItems =>
-      _items.values.fold(0, (sum, line) => sum + line.quantity);
+      cartNotifier.value.fold(0, (sum, line) => sum + line.quantity);
 
-  int get itemCount => _items.length;
+  int get itemCount => cartNotifier.value.length;
 
   double get tax => subtotal * _taxRate;
   double get deliveryFee => _deliveryFee;
@@ -47,9 +54,10 @@ class CartProvider {
   double get total => subtotal + deliveryFee + tax + platformFee;
 
   bool get isBelowMinimum => subtotal < _minimumOrder;
-  bool get isEmpty => _items.isEmpty;
+  bool get isEmpty => cartNotifier.value.isEmpty;
 
   // ==================== ADD ITEM ====================
+  /// Add item to cart with restaurant context
   void addItem(
     FoodItem item, {
     int qty = 1,
@@ -58,6 +66,7 @@ class CartProvider {
     String? restaurantName,
     double minOrder = 0.0,
   }) {
+    // If from different restaurant, clear cart
     if (_restaurantId != null && _restaurantId != restaurantId) {
       _items.clear();
     }
@@ -66,23 +75,36 @@ class CartProvider {
     _restaurantName = restaurantName;
     _minimumOrder = minOrder;
 
-    final key = item.id;
-    if (_items.containsKey(key)) {
-      _items[key]!.quantity += qty;
-      if (note != null && note.isNotEmpty) _items[key]!.note = note;
+    final List<CartLine> currentCart = List.from(cartNotifier.value);
+    final existingIndex = currentCart.indexWhere(
+      (line) => line.item.id == item.id,
+    );
+
+    if (existingIndex >= 0) {
+      // Item exists, update quantity
+      currentCart[existingIndex].quantity += qty;
+      if (note != null && note.isNotEmpty) {
+        currentCart[existingIndex].note = note;
+      }
     } else {
-      _items[key] = CartLine(item: item, quantity: qty, note: note);
+      // New item
+      currentCart.add(CartLine(item: item, quantity: qty, note: note));
     }
 
+    // Trigger callbacks
     if (onItemAdded != null) onItemAdded!(item, qty);
 
-    _notifyListeners();
+    // Notify all listeners
+    cartNotifier.value = currentCart;
   }
 
   // ==================== REMOVE ITEM ====================
+  /// Remove item from cart
   void removeItem(String id) {
-    _items.remove(id);
-    if (_items.isEmpty) {
+    final List<CartLine> currentCart = List.from(cartNotifier.value);
+    currentCart.removeWhere((line) => line.item.id == id);
+
+    if (currentCart.isEmpty) {
       _restaurantId = null;
       _restaurantName = null;
       _minimumOrder = 0.0;
@@ -90,112 +112,94 @@ class CartProvider {
 
     if (onItemRemoved != null) onItemRemoved!(id);
 
-    _notifyListeners();
+    cartNotifier.value = currentCart;
   }
 
   // ==================== CHANGE QUANTITY ====================
+  /// Change quantity by delta (increase or decrease)
   void changeQuantity(String id, int delta) {
-    final line = _items[id];
-    if (line == null) return;
+    final List<CartLine> currentCart = List.from(cartNotifier.value);
+    final index = currentCart.indexWhere((line) => line.item.id == id);
 
-    line.quantity += delta;
-    if (line.quantity <= 0) {
-      _items.remove(id);
+    if (index < 0) return;
+
+    currentCart[index].quantity += delta;
+
+    // Remove item if quantity becomes 0 or less
+    if (currentCart[index].quantity <= 0) {
+      currentCart.removeAt(index);
       if (onItemRemoved != null) onItemRemoved!(id);
     } else {
-      if (onQuantityChanged != null) onQuantityChanged!(id, line.quantity);
+      if (onQuantityChanged != null) {
+        onQuantityChanged!(id, currentCart[index].quantity);
+      }
     }
 
-    if (_items.isEmpty) {
+    if (currentCart.isEmpty) {
       _restaurantId = null;
       _restaurantName = null;
       _minimumOrder = 0.0;
     }
 
-    _notifyListeners();
+    cartNotifier.value = currentCart;
+  }
+
+  // ==================== UPDATE NOTE ====================
+  /// Update special instructions for item
+  void updateNote(String id, String note) {
+    final List<CartLine> currentCart = List.from(cartNotifier.value);
+    final index = currentCart.indexWhere((line) => line.item.id == id);
+
+    if (index >= 0) {
+      currentCart[index].note = note.isNotEmpty ? note : null;
+      cartNotifier.value = currentCart;
+    }
+  }
+
+  // ==================== SET FEES & TAX ====================
+  void setTaxRate(double rate) {
+    _taxRate = rate;
+    // Notify listeners about the change
+    cartNotifier.value = List.from(cartNotifier.value);
+  }
+
+  void setDeliveryFee(double fee) {
+    _deliveryFee = fee;
+    cartNotifier.value = List.from(cartNotifier.value);
+  }
+
+  void setPlatformFee(double fee) {
+    _platformFee = fee;
+    cartNotifier.value = List.from(cartNotifier.value);
   }
 
   // ==================== CLEAR CART ====================
+  /// Clear entire cart
   void clear() {
-    _items.clear();
     _restaurantId = null;
     _restaurantName = null;
     _minimumOrder = 0.0;
 
     if (onCartCleared != null) onCartCleared!();
 
-    _notifyListeners();
+    cartNotifier.value = [];
   }
 
-  // ==================== NOTES ====================
-  void updateNote(String id, String note) {
-    if (_items.containsKey(id)) {
-      _items[id]!.note = note.isNotEmpty ? note : null;
-      _notifyListeners();
+  // ==================== HELPER ====================
+  /// Get item by id
+  CartLine? getItem(String id) {
+    try {
+      return cartNotifier.value.firstWhere((line) => line.item.id == id);
+    } catch (e) {
+      return null;
     }
   }
 
-  // ==================== FEES ====================
-  void setTaxRate(double rate) {
-    _taxRate = rate;
-    _notifyListeners();
-  }
-
-  void setDeliveryFee(double fee) {
-    _deliveryFee = fee;
-    _notifyListeners();
-  }
-
-  void setPlatformFee(double fee) {
-    _platformFee = fee;
-    _notifyListeners();
-  }
-
-  // ==================== SERIALIZATION ====================
-  Map<String, dynamic> toJson() {
-    return {
-      'restaurantId': _restaurantId,
-      'restaurantName': _restaurantName,
-      'minimumOrder': _minimumOrder,
-      'taxRate': _taxRate,
-      'deliveryFee': _deliveryFee,
-      'platformFee': _platformFee,
-      'items': _items.map((key, line) => MapEntry(key, line.toJson())),
-    };
-  }
-
-  static CartProvider fromJson(Map<String, dynamic> json) {
-    final cart = CartProvider();
-    cart._restaurantId = json['restaurantId'];
-    cart._restaurantName = json['restaurantName'];
-    cart._minimumOrder = (json['minimumOrder'] ?? 0.0).toDouble();
-    cart._taxRate = (json['taxRate'] ?? 0.0).toDouble();
-    cart._deliveryFee = (json['deliveryFee'] ?? 0.0).toDouble();
-    cart._platformFee = (json['platformFee'] ?? 0.0).toDouble();
-
-    final itemsJson = json['items'] as Map<String, dynamic>? ?? {};
-    cart._items.clear();
-    itemsJson.forEach((key, value) {
-      cart._items[key] = CartLine.fromJson(value);
-    });
-
-    cart._notifyListeners();
-    return cart;
-  }
-
-  String toJsonString() => jsonEncode(toJson());
-
-  static CartProvider fromJsonString(String jsonStr) =>
-      fromJson(jsonDecode(jsonStr));
-
-  // ==================== HELPER ====================
-  CartLine? getItem(String id) => _items[id];
-
-  void _notifyListeners() {
-    instanceNotifier.value = _instance;
-  }
+  // For backward compatibility if needed
+  List<CartLine> get _items => cartNotifier.value;
 }
 
+/// CartLine model
 class CartLine {
   final FoodItem item;
   int quantity;
@@ -210,18 +214,6 @@ class CartLine {
       item: item,
       quantity: quantity ?? this.quantity,
       note: note ?? this.note,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'item': item.toJson(), 'quantity': quantity, 'note': note};
-  }
-
-  static CartLine fromJson(Map<String, dynamic> json) {
-    return CartLine(
-      item: FoodItem.fromJson(json['item']),
-      quantity: json['quantity'] ?? 1,
-      note: json['note'],
     );
   }
 

@@ -28,7 +28,7 @@ class OrderSuccessScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 60),
 
-              // ✅ Success Icon
+              //Success Icon
               Container(
                 width: 120,
                 height: 120,
@@ -47,7 +47,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // ✅ Success Message
+              // Success Message
               const Text(
                 'Order Placed Successfully!',
                 style: TextStyle(
@@ -65,7 +65,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // ✅ Order Details Card
+              // Order Details Card
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(16),
@@ -104,7 +104,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // ✅ Track Order Button (filled)
+              // Track Order Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
@@ -143,7 +143,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // ✅ Back to Home Button (outlined)
+              //Back to Home Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
@@ -175,7 +175,7 @@ class OrderSuccessScreen extends StatelessWidget {
     );
   }
 
-  // ✅ Helper for detail rows
+  //Methods for detail rows
   Widget _detailRow(
     IconData icon,
     String label,

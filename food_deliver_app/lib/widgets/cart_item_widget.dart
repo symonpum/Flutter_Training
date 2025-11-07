@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import '../providers/cart_provider.dart';
 
-// this file is for cart item widget
-// used in cart screen
-// displays individual cart item with quantity controls, total price, and special instructions
-// listens to CartProvider for live updates
+// Cart item widget - displays individual cart item with quantity controls, total price, and special instructions
+// Listens to CartProvider for live updates using Singleton & Observer pattern
 class CartItemWidget extends StatefulWidget {
   final CartLine cartLine;
 
@@ -21,12 +19,13 @@ class _CartItemWidgetState extends State<CartItemWidget> {
   void initState() {
     super.initState();
     _cartProvider = CartProvider();
-    CartProvider.instanceNotifier.addListener(_onCartChanged);
+    // Listen to cart changes
+    _cartProvider.cartNotifier.addListener(_onCartChanged);
   }
 
   @override
   void dispose() {
-    CartProvider.instanceNotifier.removeListener(_onCartChanged);
+    _cartProvider.cartNotifier.removeListener(_onCartChanged);
     super.dispose();
   }
 
@@ -39,6 +38,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
     final item = widget.cartLine.item;
     final foodId = item.id;
 
+    // Get the latest cart line from provider
     final currentLine = _cartProvider.getItem(foodId);
     final displayNote = currentLine?.note;
 
@@ -60,10 +60,11 @@ class _CartItemWidgetState extends State<CartItemWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top: image + info + delete(right aligned inside name row)
+          // Top: image + info + delete
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Food image
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
@@ -89,7 +90,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ✅ Food Name + Delete (aligned right)
+                    // ✅ Food Name + Delete Button (aligned right)
                     Row(
                       children: [
                         Expanded(
@@ -116,6 +117,8 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                     ),
 
                     const SizedBox(height: 4),
+
+                    // Price per item
                     Text(
                       '\$${item.price.toStringAsFixed(2)} each',
                       style: const TextStyle(
@@ -125,10 +128,11 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                     ),
                     const SizedBox(height: 12),
 
+                    // Quantity controls + Total price row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Quantity box
+                        // Quantity box with +/- buttons
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.grey.shade100,
@@ -137,6 +141,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           ),
                           child: Row(
                             children: [
+                              // Minus button
                               IconButton(
                                 icon: const Icon(Icons.remove, size: 18),
                                 padding: EdgeInsets.zero,
@@ -149,16 +154,19 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                                 },
                               ),
 
-                              ValueListenableBuilder<CartProvider>(
-                                valueListenable: CartProvider.instanceNotifier,
-                                builder: (context, cart, _) {
-                                  final currentLine = cart.getItem(foodId);
+                              // Quantity display (LIVE UPDATE)
+                              ValueListenableBuilder<List<CartLine>>(
+                                valueListenable: _cartProvider.cartNotifier,
+                                builder: (context, cartItems, _) {
+                                  final currentLine = _cartProvider.getItem(
+                                    foodId,
+                                  );
                                   final qty = currentLine?.quantity ?? 0;
 
                                   return SizedBox(
                                     width: 50,
                                     child: Text(
-                                      "$qty",
+                                      '$qty',
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                         fontSize: 18,
@@ -169,6 +177,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                                 },
                               ),
 
+                              // Plus button
                               IconButton(
                                 icon: const Icon(Icons.add, size: 18),
                                 padding: EdgeInsets.zero,
@@ -184,10 +193,11 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           ),
                         ),
 
-                        ValueListenableBuilder<CartProvider>(
-                          valueListenable: CartProvider.instanceNotifier,
-                          builder: (context, cart, _) {
-                            final currentLine = cart.getItem(foodId);
+                        // Total price (LIVE UPDATE)
+                        ValueListenableBuilder<List<CartLine>>(
+                          valueListenable: _cartProvider.cartNotifier,
+                          builder: (context, cartItems, _) {
+                            final currentLine = _cartProvider.getItem(foodId);
                             final total = currentLine?.totalPrice ?? 0.0;
 
                             return Text(
@@ -210,7 +220,9 @@ class _CartItemWidgetState extends State<CartItemWidget> {
 
           const SizedBox(height: 12),
 
+          // Special instructions section
           if (displayNote != null && displayNote.isNotEmpty)
+            // Show saved instructions
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
@@ -262,6 +274,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
               ),
             )
           else
+            // Show add instructions button
             GestureDetector(
               onTap: () => _editInstructions(context, foodId),
               child: Container(
@@ -295,9 +308,10 @@ class _CartItemWidgetState extends State<CartItemWidget> {
     );
   }
 
+  /// Show dialog to edit special instructions
   Future<void> _editInstructions(BuildContext context, String foodId) async {
     final currentLine = _cartProvider.getItem(foodId);
-    String tempNote = currentLine?.note ?? "";
+    String tempNote = currentLine?.note ?? '';
 
     await showDialog(
       context: context,
