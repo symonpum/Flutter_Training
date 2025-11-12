@@ -40,7 +40,13 @@ class _CartItemWidgetState extends State<CartItemWidget> {
 
     // Get the latest cart line from provider
     final currentLine = _cartProvider.getItem(foodId);
-    final displayNote = currentLine?.note;
+
+    // If the item was removed (e.g., quantity went to 0), don't build anything
+    if (currentLine == null) {
+      return const SizedBox.shrink();
+    }
+
+    final displayNote = currentLine.note;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),

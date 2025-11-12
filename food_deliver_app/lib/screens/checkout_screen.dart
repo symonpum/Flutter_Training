@@ -6,6 +6,12 @@ import '../widgets/mini_map_widget.dart';
 import 'location_picker_screen.dart';
 import 'order_success_screen.dart';
 
+// --- ADDED IMPORTS ---
+import '../models/order.dart';
+import '../providers/order_provider.dart';
+import '../services/order_service.dart';
+// ---------------------
+
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
 
@@ -15,20 +21,37 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   late CartProvider _cartProvider;
-  String? _selectedAddress;
+  String? _selectedAddressString; // Use your variable
   String? _selectedPaymentMethod;
   String _specialInstructions = '';
   late LatLng _deliveryLocation;
+
+  // --- ADDED ---
+  late Address _deliveryAddressFull; // Full object for the Order
+  bool _isPlacingOrder = false;
+  // -------------
 
   @override
   void initState() {
     super.initState();
     _cartProvider = CartProvider();
-    // Set default address
-    _selectedAddress = '9485 Cherry Boulevard, Mountain View, CA 94174';
     _selectedPaymentMethod = 'visa_1234'; // Default payment
-    // Set default location (Mountain View, CA)
+
+    // Set default address from your original code
+    _selectedAddressString = '9485 Cherry Boulevard, Mountain View, CA 94174';
     _deliveryLocation = const LatLng(37.3895, -122.0857);
+
+    // --- ADDED: Create the full Address object ---
+    _deliveryAddressFull = Address(
+      id: 'addr_default',
+      line1: _selectedAddressString!,
+      city: 'Mountain View',
+      region: 'CA',
+      postalCode: '94174',
+      lat: _deliveryLocation.latitude,
+      lng: _deliveryLocation.longitude,
+    );
+    // ------------------------------------------
   }
 
   @override
@@ -50,20 +73,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Order Summary Section
             _buildOrderSummary(),
-
-            // Delivery Address Section
             _buildDeliveryAddressSection(context),
-
-            // Payment Method Section
             _buildPaymentMethodSection(),
-
-            // Special Instructions Section
             _buildSpecialInstructionsSection(),
-
-            // Place Order Button
-            _buildPlaceOrderButton(),
+            _buildPlaceOrderButton(), // This button will now call the real logic
           ],
         ),
       ),
@@ -71,6 +85,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   // ==================== ORDER SUMMARY ====================
+  // (Your UI widget - No changes)
   Widget _buildOrderSummary() {
     return ValueListenableBuilder<List<CartLine>>(
       valueListenable: _cartProvider.cartNotifier,
@@ -109,8 +124,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Items list
               ...items.map((line) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -139,11 +152,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 );
               }),
-
               Divider(color: Colors.grey.shade300),
               const SizedBox(height: 12),
-
-              // Subtotal
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -158,8 +168,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-
-              // Delivery Fee
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -174,8 +182,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-
-              // Tax & Fees
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -190,11 +196,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-
               Divider(color: Colors.grey.shade300),
               const SizedBox(height: 12),
-
-              // Total
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -220,6 +223,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   // ==================== DELIVERY ADDRESS SECTION ====================
+  // (Your UI widget - Modified to handle full Address object)
   Widget _buildDeliveryAddressSection(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -235,7 +239,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title with Icon
           const Row(
             children: [
               Icon(Icons.location_on, color: Colors.green, size: 24),
@@ -247,8 +250,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ],
           ),
           const SizedBox(height: 16),
-
-          // Current Address Row
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -277,7 +278,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _selectedAddress ?? 'No address selected',
+                        _selectedAddressString ?? 'No address selected',
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.black54,
@@ -294,54 +295,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: Colors.grey.shade400,
                     size: 24,
                   ),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const LocationPickerScreen(),
-                      ),
-                    );
-                    if (result != null) {
-                      setState(() {
-                        _selectedAddress = result;
-                      });
-                    }
-                  },
+                  onPressed: _navigateToLocationPicker, // Use helper
                 ),
               ],
             ),
           ),
-
-          //   const SizedBox(height: 16),
-
-          // Mini Map (Google Maps)
           MiniMapWidget(
             initialLocation: _deliveryLocation,
             interactive: true,
             onLocationChanged: (LatLng newLocation) {
               setState(() {
                 _deliveryLocation = newLocation;
+                // Update the full address object's lat/lng
+                _deliveryAddressFull = _deliveryAddressFull.copyWith(
+                  lat: newLocation.latitude,
+                  lng: newLocation.longitude,
+                );
               });
-              // Optionally update address based on location
-              // You can use reverse geocoding to get address
             },
           ),
-
           const SizedBox(height: 16),
-
-          // Use Current Location Button
           GestureDetector(
-            onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const LocationPickerScreen()),
-              );
-              if (result != null) {
-                setState(() {
-                  _selectedAddress = result;
-                });
-              }
-            },
+            onTap: _navigateToLocationPicker, // Use helper
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
@@ -371,9 +346,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+  // --- HELPER FOR NAVIGATION ---
+  void _navigateToLocationPicker() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        // We pass the current full address to the picker
+        builder: (_) =>
+            LocationPickerScreen(initialAddress: _deliveryAddressFull),
+      ),
+    );
+
+    if (result != null && result is Address) {
+      setState(() {
+        // Update both the string for the UI and the full object
+        _selectedAddressString = result.line1;
+        _deliveryAddressFull = result;
+        _deliveryLocation = LatLng(result.lat, result.lng);
+      });
+    }
+  }
+
   // ==================== PAYMENT METHOD SECTION ====================
+  // (Your UI widget - No changes)
   Widget _buildPaymentMethodSection() {
     return Container(
+      // ... (your existing build code) ...
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -410,16 +408,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ],
           ),
           const SizedBox(height: 12),
-
-          // Visa option
           _buildPaymentOption(
             'visa_1234',
             'Visa ending in 1234',
             'Default',
             Icons.credit_card,
           ),
-          //const SizedBox(height: 12),
-          // Mastercard option
           _buildPaymentOption(
             'mastercard_5678',
             'Mastercard ending in 5678',
@@ -431,6 +425,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+  // (Your UI widget - No changes)
   Widget _buildPaymentOption(
     String id,
     String title,
@@ -438,6 +433,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     IconData icon,
   ) {
     return GestureDetector(
+      // ... (your existing build code) ...
       onTap: () {
         setState(() {
           _selectedPaymentMethod = id;
@@ -496,8 +492,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   // ==================== SPECIAL INSTRUCTIONS SECTION ====================
+  // (Your UI widget - No changes)
   Widget _buildSpecialInstructionsSection() {
     return Container(
+      // ... (your existing build code) ...
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -542,6 +540,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   // ==================== PLACE ORDER BUTTON ====================
+  // (Your UI widget - Modified onPressed)
   Widget _buildPlaceOrderButton() {
     return ValueListenableBuilder<List<CartLine>>(
       valueListenable: _cartProvider.cartNotifier,
@@ -560,31 +559,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {
-                //call place Order method
-                _placeOrder();
-                //Naviage to Order Success Screen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OrderSuccessScreen(
-                      orderId: 'FD12345678',
-                      restaurantName: 'The Great Restaurant',
-                      deliveryTime: 30,
-                      total: 45.67,
+              // --- LOGIC MERGED ---
+              onPressed: _isPlacingOrder
+                  ? null
+                  : _handlePlaceOrder, // Use real function
+              child: _isPlacingOrder
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : Text(
+                      'Place Order • \$${total.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Text(
-                //'Place Order • \${total.toStringAsFixed(2)}',
-                'Place Order • \$${total.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              // --------------------
             ),
           ),
         );
@@ -592,31 +588,75 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  void _placeOrder() {
-    // Show confirmation dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Order Placed!'),
-        content: const Text(
-          'Your order has been placed successfully. You can track it in the Orders section.',
-        ),
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-              _cartProvider.clear(); // Clear cart
-              Navigator.pop(context); // Return to previous screen
-            },
-            child: const Text('OK'),
+  // ========================================================
+  // === LOGIC MERGED: Replaced your mock _placeOrder method ===
+  // ========================================================
+  Future<void> _handlePlaceOrder() async {
+    if (_cartProvider.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Your cart is empty!')));
+      return;
+    }
+
+    setState(() => _isPlacingOrder = true);
+
+    try {
+      // 1. Get items with quantities from the CartProvider
+      final orderItems = _cartProvider.toOrderFoodItems();
+
+      // 2. Build the new Order object
+      final newOrder = Order(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        restaurantId: _cartProvider.restaurantId,
+        restaurantName: _cartProvider.restaurantName,
+        items: orderItems,
+        deliveryAddress: _deliveryAddressFull, // Use the full Address object
+        subtotal: _cartProvider.subtotal,
+        deliveryFee: _cartProvider.deliveryFee,
+        total: _cartProvider.total,
+        status: OrderStatus.pending,
+        createdAt: DateTime.now(),
+      );
+
+      // 3. Call the OrderService to create the order
+      final placedOrder = await OrderService.createOrder(newOrder);
+
+      // 4. Set the new order as 'current' in the OrderProvider
+      OrderProvider().setCurrent(placedOrder);
+
+      // 5. Clear the cart
+      _cartProvider.clear();
+
+      // 6. Navigate to Success Screen with REAL data
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderSuccessScreen(
+              orderId: placedOrder.id,
+              restaurantName: placedOrder.restaurantName ?? 'Restaurant',
+              deliveryTime: 30, // You can make this dynamic later
+              total: placedOrder.total,
+            ),
           ),
-        ],
-      ),
-    );
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to place order: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isPlacingOrder = false);
+      }
+    }
   }
 
   // ==================== ADD PAYMENT DIALOG ====================
+  // (Your UI widget - No changes)
   void _addPaymentDialog() {
     final formKey = GlobalKey<FormState>();
     String cardholderName = '';
@@ -627,6 +667,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        // ... (your existing build code) ...
         insetPadding: const EdgeInsets.all(16),
         child: Container(
           constraints: BoxConstraints(
@@ -641,7 +682,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header
                     const Text(
                       'Add New Card',
                       style: TextStyle(
@@ -650,8 +690,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Cardholder Name
                     TextFormField(
                       decoration: InputDecoration(
                         filled: true,
@@ -687,8 +725,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       onChanged: (value) => cardholderName = value,
                     ),
                     const SizedBox(height: 16),
-
-                    // Card Number
                     TextFormField(
                       decoration: InputDecoration(
                         filled: true,
@@ -728,11 +764,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       onChanged: (value) => cardNumber = value,
                     ),
                     const SizedBox(height: 16),
-
-                    // Expiry & CVV Row
                     Row(
                       children: [
-                        // Expiry Date
                         Expanded(
                           child: TextFormField(
                             decoration: InputDecoration(
@@ -773,8 +806,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-
-                        // CVV
                         Expanded(
                           child: TextFormField(
                             decoration: InputDecoration(
@@ -821,11 +852,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ],
                     ),
                     const SizedBox(height: 32),
-
-                    // Buttons Row
                     Row(
                       children: [
-                        // Cancel Button
                         Expanded(
                           child: TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -843,8 +871,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-
-                        // Add Card Button
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
