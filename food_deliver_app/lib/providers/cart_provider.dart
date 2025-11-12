@@ -1,11 +1,10 @@
+// lib/providers/cart_provider.dart
 import 'package:flutter/foundation.dart';
 import '../models/food_item.dart';
 
 // GoF Pattern: Singleton & Observer
-// Singleton: Ensures a single, globally accessible cart state throughout the app.
-// Observer: ValueNotifier acts as the "Subject". UI widgets listen to it and rebuild upon changes.
 class CartProvider {
-  // --- Singleton Implementation sample from ecommerce App---
+  // --- Singleton Implementation ---
   static final CartProvider _instance = CartProvider._internal();
 
   factory CartProvider() {
@@ -15,7 +14,6 @@ class CartProvider {
   CartProvider._internal();
 
   // --- Observer Pattern: ValueNotifier as Subject ---
-  // UI widgets listen to this notifier and rebuild when cart changes
   final ValueNotifier<List<CartLine>> cartNotifier = ValueNotifier([]);
 
   // Restaurant context
@@ -55,6 +53,18 @@ class CartProvider {
 
   bool get isBelowMinimum => subtotal < _minimumOrder;
   bool get isEmpty => cartNotifier.value.isEmpty;
+
+  // ==================== CONVERSION FOR ORDER CREATION  ====================
+  /// Converts the current cart lines into a list of FoodItem models
+  /// with quantity and note injected via copyWith.
+  List<FoodItem> toOrderFoodItems() {
+    return cartNotifier.value
+        .map(
+          (line) =>
+              line.item.copyWith(quantity: line.quantity, note: line.note),
+        )
+        .toList();
+  }
 
   // ==================== ADD ITEM ====================
   /// Add item to cart with restaurant context

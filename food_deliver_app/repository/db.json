@@ -1311,6 +1311,813 @@
       "driverLongitude": null,
       "paymentMethod": "Visa ending in 1234",
       "paymentStatus": "completed"
+    },
+    {
+      "id": "73a9822b-2a6f-44ae-a7a8-2285365b72b6",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        }
+      ],
+      "subtotal": 49.96,
+      "deliveryFee": 2.99,
+      "tax": 3.9968000000000004,
+      "platformFee": 0,
+      "total": 56.9468,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:18:29.853375",
+      "estimatedDeliveryTime": "2025-11-12T16:48:29.847546",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "cd61c45a-7a4e-4ed3-9c84-a30c4006ab59",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "9",
+          "name": "Salmon Roll",
+          "price": 8.99,
+          "quantity": 1,
+          "totalPrice": 8.99
+        },
+        {
+          "id": "10",
+          "name": "Spicy Tuna Roll",
+          "price": 9.99,
+          "quantity": 1,
+          "totalPrice": 9.99
+        }
+      ],
+      "subtotal": 27.97,
+      "deliveryFee": 2.99,
+      "tax": 2.2376,
+      "platformFee": 0,
+      "total": 33.1976,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:21:28.426424",
+      "estimatedDeliveryTime": "2025-11-12T16:51:28.426376",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": "test instruction for rest!",
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "f74581c3-924e-4c71-b41f-b1dc64bdf1d4",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        }
+      ],
+      "subtotal": 37.97,
+      "deliveryFee": 2.99,
+      "tax": 3.0376,
+      "platformFee": 0,
+      "total": 43.9976,
+      "status": "cancelled",
+      "createdAt": "2025-11-12T16:30:07.526101",
+      "estimatedDeliveryTime": "2025-11-12T17:00:07.525978",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "61e47be6-ae91-4c1a-b814-8d39b9c5c113",
+      "restaurantId": "1",
+      "restaurantName": "Pizza Palace",
+      "items": [
+        {
+          "id": "1",
+          "name": "Margherita Pizza",
+          "price": 14.99,
+          "quantity": 1,
+          "totalPrice": 14.99
+        },
+        {
+          "id": "3",
+          "name": "Quattro Stagioni",
+          "price": 18.99,
+          "quantity": 1,
+          "totalPrice": 18.99
+        }
+      ],
+      "subtotal": 48.97,
+      "deliveryFee": 2.99,
+      "tax": 3.9176,
+      "platformFee": 0,
+      "total": 55.8776,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:33:00.923695",
+      "estimatedDeliveryTime": "2025-11-12T17:03:00.923654",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": "tttesstteest",
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "d79eb614-6130-408b-a514-c503543970c9",
+      "restaurantId": "1",
+      "restaurantName": "Pizza Palace",
+      "items": [
+        {
+          "id": "2",
+          "name": "Pepperoni Pizza",
+          "price": 16.99,
+          "quantity": 1,
+          "totalPrice": 16.99
+        }
+      ],
+      "subtotal": 33.98,
+      "deliveryFee": 2.99,
+      "tax": 2.7184,
+      "platformFee": 0,
+      "total": 39.6884,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:34:01.706538",
+      "estimatedDeliveryTime": "2025-11-12T17:04:01.706464",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "d4e8606f-0dc4-4dd3-bd3f-05039dcd4709",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "12",
+          "name": "Miso Soup",
+          "price": 3.99,
+          "quantity": 1,
+          "totalPrice": 3.99
+        }
+      ],
+      "subtotal": 23.94,
+      "deliveryFee": 2.99,
+      "tax": 1.9152000000000002,
+      "platformFee": 0,
+      "total": 28.8452,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:35:06.990067",
+      "estimatedDeliveryTime": "2025-11-12T17:05:06.990017",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "03d2adaa-8e18-4c86-b6b8-94cdf010224a",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        },
+        {
+          "id": "8",
+          "name": "French Fries",
+          "price": 4.99,
+          "quantity": 1,
+          "totalPrice": 4.99
+        }
+      ],
+      "subtotal": 47.95,
+      "deliveryFee": 2.99,
+      "tax": 3.8360000000000003,
+      "platformFee": 0,
+      "total": 54.776,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:58:01.786949",
+      "estimatedDeliveryTime": "2025-11-12T17:28:01.786796",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": "sdfdsfsdfdsf",
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "72d483b5-3be0-4a8a-ba28-b664b6655aaf",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "8",
+          "name": "French Fries",
+          "price": 4.99,
+          "quantity": 1,
+          "totalPrice": 4.99
+        },
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        }
+      ],
+      "subtotal": 22.97,
+      "deliveryFee": 2.99,
+      "tax": 1.8376,
+      "platformFee": 0,
+      "total": 27.7976,
+      "status": "delivered",
+      "createdAt": "2025-11-12T16:58:55.394793",
+      "estimatedDeliveryTime": "2025-11-12T17:28:55.394603",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "dfd61523-f784-4dd5-b599-206dc4e3d8ab",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        },
+        {
+          "id": "7",
+          "name": "BBQ Bacon Burger",
+          "price": 15.99,
+          "quantity": 1,
+          "totalPrice": 15.99
+        }
+      ],
+      "subtotal": 65.95,
+      "deliveryFee": 2.99,
+      "tax": 5.276000000000001,
+      "platformFee": 0,
+      "total": 74.216,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:09:22.532013",
+      "estimatedDeliveryTime": "2025-11-12T17:39:22.531867",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "d835fa8f-66e7-4131-b5de-cfebf26af273",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        },
+        {
+          "id": "7",
+          "name": "BBQ Bacon Burger",
+          "price": 15.99,
+          "quantity": 1,
+          "totalPrice": 15.99
+        }
+      ],
+      "subtotal": 51.96,
+      "deliveryFee": 2.99,
+      "tax": 4.1568000000000005,
+      "platformFee": 0,
+      "total": 59.10680000000001,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:10:32.299854",
+      "estimatedDeliveryTime": "2025-11-12T17:40:32.298584",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "23cf0830-c5d3-4e9b-9c92-2e693d4a7963",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "9",
+          "name": "Salmon Roll",
+          "price": 8.99,
+          "quantity": 1,
+          "totalPrice": 8.99
+        }
+      ],
+      "subtotal": 35.96,
+      "deliveryFee": 2.99,
+      "tax": 2.8768000000000002,
+      "platformFee": 0,
+      "total": 41.826800000000006,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:19:53.962666",
+      "estimatedDeliveryTime": "2025-11-12T17:49:53.962532",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "7e69f4cc-42fc-4398-bd75-4356a13b827b",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "12",
+          "name": "Miso Soup",
+          "price": 3.99,
+          "quantity": 1,
+          "totalPrice": 3.99
+        },
+        {
+          "id": "9",
+          "name": "Salmon Roll",
+          "price": 8.99,
+          "quantity": 1,
+          "totalPrice": 8.99
+        }
+      ],
+      "subtotal": 25.96,
+      "deliveryFee": 2.99,
+      "tax": 2.0768,
+      "platformFee": 0,
+      "total": 31.0268,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:21:01.675518",
+      "estimatedDeliveryTime": "2025-11-12T17:51:01.675458",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "86e2d6d3-a57f-4058-9290-5d709b53065d",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "9",
+          "name": "Salmon Roll",
+          "price": 8.99,
+          "quantity": 1,
+          "totalPrice": 8.99
+        },
+        {
+          "id": "12",
+          "name": "Miso Soup",
+          "price": 3.99,
+          "quantity": 1,
+          "totalPrice": 3.99
+        }
+      ],
+      "subtotal": 29.950000000000003,
+      "deliveryFee": 2.99,
+      "tax": 2.3960000000000004,
+      "platformFee": 0,
+      "total": 35.336000000000006,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:24:39.595642",
+      "estimatedDeliveryTime": "2025-11-12T17:54:39.595557",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "dddd2297-454c-4ea1-bbc6-14d0f2ede4bc",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "8",
+          "name": "French Fries",
+          "price": 4.99,
+          "quantity": 1,
+          "totalPrice": 4.99
+        }
+      ],
+      "subtotal": 35.96,
+      "deliveryFee": 2.99,
+      "tax": 2.8768000000000002,
+      "platformFee": 0,
+      "total": 41.826800000000006,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:27:33.733722",
+      "estimatedDeliveryTime": "2025-11-12T17:57:33.733169",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "mastercard_5678",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "52683c82-34a8-4114-b50e-a5ae559b92f1",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "8",
+          "name": "French Fries",
+          "price": 4.99,
+          "quantity": 1,
+          "totalPrice": 4.99
+        },
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        }
+      ],
+      "subtotal": 51.94,
+      "deliveryFee": 2.99,
+      "tax": 4.1552,
+      "platformFee": 0,
+      "total": 59.0852,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:32:05.622931",
+      "estimatedDeliveryTime": "2025-11-12T18:02:05.622725",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "015fccb6-ee75-4db0-85c5-f97c1becb53d",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "8",
+          "name": "French Fries",
+          "price": 4.99,
+          "quantity": 1,
+          "totalPrice": 4.99
+        },
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "totalPrice": 11.99
+        }
+      ],
+      "subtotal": 51.94,
+      "deliveryFee": 2.99,
+      "tax": 4.1552,
+      "platformFee": 0,
+      "total": 59.0852,
+      "status": "delivered",
+      "createdAt": "2025-11-12T17:41:58.586657",
+      "estimatedDeliveryTime": "2025-11-12T18:11:58.586550",
+      "deliveryAddress": "9485 Cherry Boulevard, Mountain View, CA 94174",
+      "specialInstructions": null,
+      "paymentMethod": "visa_1234",
+      "paymentStatus": "completed"
+    },
+    {
+      "id": "1762949312170",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "9",
+          "name": "Salmon Roll",
+          "price": 8.99,
+          "quantity": 3,
+          "note": "sfsfsdfdsfds",
+          "totalPrice": 26.97
+        },
+        {
+          "id": "10",
+          "name": "Spicy Tuna Roll",
+          "price": 9.99,
+          "quantity": 3,
+          "note": null,
+          "totalPrice": 29.97
+        }
+      ],
+      "deliveryAddress": {
+        "id": "addr_1",
+        "line1": "9485 Cherry Boulevard",
+        "city": "Mountain View",
+        "region": "CA",
+        "postalCode": "94174",
+        "lat": 37.3895,
+        "lng": -122.0857
+      },
+      "subtotal": 56.94,
+      "deliveryFee": 2.99,
+      "total": 64.4852,
+      "status": "pending",
+      "createdAt": "2025-11-12T19:08:32.170786"
+    },
+    {
+      "id": "1762951466585",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 1,
+          "note": null,
+          "totalPrice": 12.99
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "note": null,
+          "totalPrice": 11.99
+        }
+      ],
+      "deliveryAddress": {
+        "id": "addr_default",
+        "line1": "9485 Cherry Boulevard, Mountain View, CA 94174",
+        "city": "Mountain View",
+        "region": "CA",
+        "postalCode": "94174",
+        "lat": 37.3895,
+        "lng": -122.0857
+      },
+      "subtotal": 24.98,
+      "deliveryFee": 2.99,
+      "total": 29.9684,
+      "status": "pending",
+      "createdAt": "2025-11-12T19:44:26.585274"
+    },
+    {
+      "id": "1762951747926",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 2,
+          "note": "sdfdsfsdf",
+          "totalPrice": 25.98
+        }
+      ],
+      "deliveryAddress": {
+        "id": "2025-11-12 19:48:58.739136",
+        "line1": "1600 Amphitheatre Pkwy, Mountain View, California 94043",
+        "city": "City",
+        "region": "State",
+        "postalCode": "00000",
+        "lat": 37.4219983,
+        "lng": -122.084
+      },
+      "subtotal": 25.98,
+      "deliveryFee": 2.99,
+      "total": 31.0484,
+      "status": "pending",
+      "createdAt": "2025-11-12T19:49:07.926283"
+    },
+    {
+      "id": "1762951986989",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 3,
+          "note": null,
+          "totalPrice": 38.97
+        }
+      ],
+      "deliveryAddress": {
+        "id": "addr_default",
+        "line1": "9485 Cherry Boulevard, Mountain View, CA 94174",
+        "city": "Mountain View",
+        "region": "CA",
+        "postalCode": "94174",
+        "lat": 37.3895,
+        "lng": -122.0857
+      },
+      "subtotal": 38.97,
+      "deliveryFee": 2.99,
+      "total": 45.077600000000004,
+      "status": "pending",
+      "createdAt": "2025-11-12T19:53:06.989666"
+    },
+    {
+      "id": "1762952068069",
+      "restaurantId": "3",
+      "restaurantName": "Sushi Zen",
+      "items": [
+        {
+          "id": "9",
+          "name": "Salmon Roll",
+          "price": 8.99,
+          "quantity": 2,
+          "note": null,
+          "totalPrice": 17.98
+        },
+        {
+          "id": "12",
+          "name": "Miso Soup",
+          "price": 3.99,
+          "quantity": 1,
+          "note": null,
+          "totalPrice": 3.99
+        }
+      ],
+      "deliveryAddress": {
+        "id": "2025-11-12 19:54:22.587758",
+        "line1": "1600 Amphitheatre Pkwy, Mountain View, California 94043",
+        "city": "City",
+        "region": "State",
+        "postalCode": "00000",
+        "lat": 37.4219983,
+        "lng": -122.084
+      },
+      "subtotal": 21.97,
+      "deliveryFee": 2.99,
+      "total": 26.7176,
+      "status": "pending",
+      "createdAt": "2025-11-12T19:54:28.069409"
+    },
+    {
+      "id": "1762952636194",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "8",
+          "name": "French Fries",
+          "price": 4.99,
+          "quantity": 2,
+          "note": "sdfsdfdsf",
+          "totalPrice": 9.98
+        },
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "price": 12.99,
+          "quantity": 2,
+          "note": null,
+          "totalPrice": 25.98
+        },
+        {
+          "id": "6",
+          "name": "Veggie Burger",
+          "price": 11.99,
+          "quantity": 1,
+          "note": null,
+          "totalPrice": 11.99
+        }
+      ],
+      "deliveryAddress": {
+        "id": "addr_default",
+        "line1": "9485 Cherry Boulevard, Mountain View, CA 94174",
+        "city": "Mountain View",
+        "region": "CA",
+        "postalCode": "94174",
+        "lat": 37.3895,
+        "lng": -122.0857
+      },
+      "subtotal": 47.95,
+      "deliveryFee": 2.99,
+      "total": 54.776,
+      "status": "pending",
+      "createdAt": "2025-11-12T20:03:56.194294"
+    },
+    {
+      "id": "1762952722450",
+      "restaurantId": "2",
+      "restaurantName": "Burger House",
+      "items": [
+        {
+          "id": "5",
+          "name": "Classic Cheeseburger",
+          "description": "Beef patty with cheese, lettuce, tomato, and onions",
+          "price": 12.99,
+          "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
+          "category": "Burgers",
+          "restaurantId": "2",
+          "isAvailable": true,
+          "isVegetarian": false,
+          "isVegan": false,
+          "isSpicy": false,
+          "rating": 4.4,
+          "reviewCount": 28,
+          "calories": 580,
+          "preparationTime": 10,
+          "quantity": 2,
+          "note": "dsfsdf"
+        },
+        {
+          "id": "8",
+          "name": "French Fries",
+          "description": "Crispy golden french fries",
+          "price": 4.99,
+          "imageUrl": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400",
+          "category": "Sides",
+          "restaurantId": "2",
+          "isAvailable": true,
+          "isVegetarian": true,
+          "isVegan": true,
+          "isSpicy": false,
+          "rating": 4.3,
+          "reviewCount": 67,
+          "calories": 220,
+          "preparationTime": 5,
+          "quantity": 1
+        }
+      ],
+      "deliveryAddress": {
+        "id": "2025-11-12 20:05:15.638703",
+        "line1": "1600 Amphitheatre Pkwy, Mountain View, California 94043",
+        "city": "City",
+        "region": "State",
+        "postalCode": "00000",
+        "lat": 37.4219983,
+        "lng": -122.084
+      },
+      "subtotal": 30.97,
+      "deliveryFee": 2.99,
+      "total": 36.4376,
+      "status": "pending",
+      "createdAt": "2025-11-12T20:05:22.451"
     }
   ],
   "reviews": [

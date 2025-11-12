@@ -27,8 +27,6 @@ class OrderSuccessScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 60),
-
-              //Success Icon
               Container(
                 width: 120,
                 height: 120,
@@ -44,10 +42,7 @@ class OrderSuccessScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              // Success Message
               const Text(
                 textAlign: TextAlign.center,
                 'Order Placed Successfully!',
@@ -63,10 +58,7 @@ class OrderSuccessScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
-
               const SizedBox(height: 32),
-
-              // Order Details Card
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(16),
@@ -102,33 +94,24 @@ class OrderSuccessScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 32),
-
-              // Track Order Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
+                    // === THIS IS THE CORRECTED NAVIGATION ===
                     onPressed: () {
-                      final cart = CartProvider();
-                      final foodItems = cart.items
-                          .map((line) => line.item)
-                          .toList();
-
-                      cart.clear();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (_) => OrderTrackingScreen(
-                            orderId: orderId,
-                            items: foodItems,
-                            status: 'Order Confirmed',
+                            orderId: orderId, // Only pass the ID
                           ),
                         ),
                       );
                     },
+                    // ======================================
                     icon: const Icon(Icons.track_changes),
                     label: const Text(
                       'Track Your Order',
@@ -149,17 +132,13 @@ class OrderSuccessScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 12),
-
-              //Back to Home Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      CartProvider().clear();
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     icon: const Icon(Icons.home),
@@ -182,7 +161,6 @@ class OrderSuccessScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 60),
             ],
           ),
@@ -191,7 +169,6 @@ class OrderSuccessScreen extends StatelessWidget {
     );
   }
 
-  //Methods for detail rows
   Widget _detailRow(
     IconData icon,
     String label,
