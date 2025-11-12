@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../providers/cart_provider.dart';
+import '../models/address.dart';
 import '../widgets/mini_map_widget.dart';
 import 'location_picker_screen.dart';
+import 'order_success_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -16,6 +18,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String? _selectedAddress;
   String? _selectedPaymentMethod;
   String _specialInstructions = '';
+  late LatLng _deliveryLocation;
 
   @override
   void initState() {
@@ -24,6 +27,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Set default address
     _selectedAddress = '9485 Cherry Boulevard, Mountain View, CA 94174';
     _selectedPaymentMethod = 'visa_1234'; // Default payment
+    // Set default location (Mountain View, CA)
+    _deliveryLocation = const LatLng(37.3895, -122.0857);
   }
 
   @override
@@ -38,7 +43,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -80,11 +85,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           margin: const EdgeInsets.all(16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade400),
+            border: Border.all(color: Colors.grey.shade300),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6),
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6),
             ],
           ),
           child: Column(
@@ -135,7 +140,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 );
               }),
 
-              Divider(color: Colors.grey.shade400),
+              Divider(color: Colors.grey.shade300),
               const SizedBox(height: 12),
 
               // Subtotal
@@ -186,7 +191,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               const SizedBox(height: 12),
 
-              Divider(color: Colors.grey.shade400),
+              Divider(color: Colors.grey.shade300),
               const SizedBox(height: 12),
 
               // Total
@@ -222,9 +227,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade400),
+        border: Border.all(color: Colors.grey.shade300),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6),
         ],
       ),
       child: Column(
@@ -307,78 +312,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
           ),
 
-          const SizedBox(height: 1),
+          //   const SizedBox(height: 16),
 
-          // Mini Map (Placeholder - you can replace with actual map)
-          Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
-              ),
-              border: Border.all(color: Colors.grey.shade400),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Stack(
-                children: [
-                  // Google Maps Placeholder Image
-                  Image.network(
-                    'https://via.placeholder.com/400x150/E8F5E9/4CAF50?text=Map+View',
-                    //https://developers.google.com/maps/documentation
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey.shade200,
-                      child: const Center(
-                        child: Icon(
-                          Icons.map_outlined,
-                          size: 40,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Red Pin in center
-                  Center(
-                    child: Icon(Icons.location_on, color: Colors.red, size: 40),
-                  ),
-
-                  // Current Location Button (bottom right)
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.my_location,
-                          color: Colors.black54,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          // Center map on current location
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Mini Map (Google Maps)
+          MiniMapWidget(
+            initialLocation: _deliveryLocation,
+            interactive: true,
+            onLocationChanged: (LatLng newLocation) {
+              setState(() {
+                _deliveryLocation = newLocation;
+              });
+              // Optionally update address based on location
+              // You can use reverse geocoding to get address
+            },
           ),
 
           const SizedBox(height: 16),
@@ -401,10 +347,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               decoration: BoxDecoration(
                 color: Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(8),
-                //border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Colors.grey.shade300),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.my_location, color: Colors.green, size: 20),
                   const SizedBox(width: 8),
@@ -455,9 +401,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
               ),
               TextButton(
-                onPressed: () {
-                  // Add new payment method
-                },
+                onPressed: _addPaymentDialog, // Call the method directly
                 child: const Text(
                   '+ Add',
                   style: TextStyle(color: Colors.green),
@@ -474,8 +418,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             'Default',
             Icons.credit_card,
           ),
-          const SizedBox(height: 12),
-
+          //const SizedBox(height: 12),
           // Mastercard option
           _buildPaymentOption(
             'mastercard_5678',
@@ -503,12 +446,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.grey.shade50,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: _selectedPaymentMethod == id
-                ? Colors.green
-                : Colors.grey.shade300,
+                ? Colors.green.shade100
+                : Colors.white,
             width: 2,
           ),
         ),
@@ -618,10 +561,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
               onPressed: () {
+                //call place Order method
                 _placeOrder();
+                //Naviage to Order Success Screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const OrderSuccessScreen(
+                      orderId: 'FD12345678',
+                      restaurantName: 'The Great Restaurant',
+                      deliveryTime: 30,
+                      total: 45.67,
+                    ),
+                  ),
+                );
               },
               child: Text(
-                'Place Order • \${total.toStringAsFixed(2)}',
+                //'Place Order • \${total.toStringAsFixed(2)}',
+                'Place Order • \$${total.toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -655,6 +612,278 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: const Text('OK'),
           ),
         ],
+      ),
+    );
+  }
+
+  // ==================== ADD PAYMENT DIALOG ====================
+  void _addPaymentDialog() {
+    final formKey = GlobalKey<FormState>();
+    String cardholderName = '';
+    String cardNumber = '';
+    String expiryDate = '';
+    String cvv = '';
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        insetPadding: const EdgeInsets.all(16),
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+            maxWidth: MediaQuery.of(context).size.width * 0.9,
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header
+                    const Text(
+                      'Add New Card',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Cardholder Name
+                    TextFormField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        labelText: 'Cardholder Name',
+                        hintText: 'Symon PUM',
+                        prefixIcon: const Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.green,
+                            width: 2,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please enter cardholder name';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) => cardholderName = value,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Card Number
+                    TextFormField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        labelText: 'Card Number',
+                        hintText: '1234 5678 9012 3456',
+                        prefixIcon: const Icon(Icons.credit_card),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.green,
+                            width: 2,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Please enter card number';
+                        }
+                        if (value!.replaceAll(' ', '').length != 16) {
+                          return 'Card number must be 16 digits';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) => cardNumber = value,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Expiry & CVV Row
+                    Row(
+                      children: [
+                        // Expiry Date
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              labelText: 'Expiry',
+                              hintText: 'MM/YY',
+                              prefixIcon: const Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 14,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value?.isEmpty ?? true) {
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) => expiryDate = value,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // CVV
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              labelText: 'CVV',
+                              hintText: '123',
+                              prefixIcon: const Icon(Icons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                  width: 2,
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 14,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            obscureText: true,
+                            validator: (value) {
+                              if (value?.isEmpty ?? true) {
+                                return 'Required';
+                              }
+                              if (value!.length < 3) {
+                                return 'Invalid';
+                              }
+                              return null;
+                            },
+                            onChanged: (value) => cvv = value,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Buttons Row
+                    Row(
+                      children: [
+                        // Cancel Button
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              side: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Add Card Button
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Card added successfully!'),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text(
+                              'Add Card',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

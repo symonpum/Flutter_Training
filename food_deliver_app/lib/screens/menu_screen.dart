@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/food_item.dart';
 import '../providers/cart_provider.dart';
 
-// Menu Screen showing food items and allowing adding to cart
-// integrates with CartProvider for live cart updates
-// displays food items from a restaurant and allows adding them to the cart
 class MenuScreen extends StatefulWidget {
   final String restaurantId;
   final String restaurantName;
@@ -42,7 +39,8 @@ class _MenuScreenState extends State<MenuScreen> {
           name: 'Margherita Pizza',
           description: 'Classic pizza with tomato, mozzarella, and basil',
           price: 12.99,
-          image: 'https://via.placeholder.com/300x300?text=Margherita+Pizza',
+          image:
+              'https://via.placeholder.com/300x300?text=Margherita+Pizza',
           restaurantId: widget.restaurantId,
           category: 'Pizza',
           rating: 4.5,
@@ -51,9 +49,11 @@ class _MenuScreenState extends State<MenuScreen> {
         FoodItem(
           id: '2',
           name: 'Cheese Burger',
-          description: 'Juicy burger with cheddar cheese, lettuce, and tomato',
+          description:
+              'Juicy burger with cheddar cheese, lettuce, and tomato',
           price: 8.99,
-          image: 'https://via.placeholder.com/300x300?text=Cheese+Burger',
+          image:
+              'https://via.placeholder.com/300x300?text=Cheese+Burger',
           restaurantId: widget.restaurantId,
           category: 'Burgers',
           rating: 4.3,
@@ -75,7 +75,8 @@ class _MenuScreenState extends State<MenuScreen> {
           name: 'Spaghetti Carbonara',
           description: 'Creamy pasta with bacon and parmesan',
           price: 11.99,
-          image: 'https://via.placeholder.com/300x300?text=Spaghetti+Carbonara',
+          image:
+              'https://via.placeholder.com/300x300?text=Spaghetti+Carbonara',
           restaurantId: widget.restaurantId,
           category: 'Pasta',
           rating: 4.6,
@@ -87,7 +88,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _addToCart(FoodItem food) {
-    // FoodItem object (not individual fields)
+    // ✅ CORRECT: Pass FoodItem object (not individual fields)
     _cartProvider.addItem(
       food,
       qty: 1,
@@ -122,10 +123,10 @@ class _MenuScreenState extends State<MenuScreen> {
           // Cart Icon Badge - LIVE UPDATE
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ValueListenableBuilder<CartProvider>(
-              valueListenable: CartProvider.instanceNotifier,
-              builder: (context, cart, _) {
-                final itemCount = cart.itemCount;
+            child: ValueListenableBuilder<List<CartLine>>(
+              valueListenable: CartProvider().cartNotifier,
+              builder: (context, cartItems, _) {
+                final itemCount = CartProvider().itemCount;
                 return Stack(
                   children: [
                     IconButton(

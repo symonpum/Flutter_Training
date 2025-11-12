@@ -49,9 +49,10 @@ class OrderSuccessScreen extends StatelessWidget {
 
               // Success Message
               const Text(
+                textAlign: TextAlign.center,
                 'Order Placed Successfully!',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
                 ),
@@ -83,9 +84,9 @@ class OrderSuccessScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _detailRow(Icons.receipt, 'Order ID', orderId),
-                    const Divider(height: 16),
+                    const Divider(height: 8),
                     _detailRow(Icons.restaurant, 'Restaurant', restaurantName),
-                    const Divider(height: 16),
+                    const Divider(height: 8),
                     _detailRow(
                       Icons.schedule,
                       'Estimated Delivery',
@@ -93,7 +94,7 @@ class OrderSuccessScreen extends StatelessWidget {
                     ),
                     const Divider(height: 16),
                     _detailRow(
-                      Icons.payment,
+                      Icons.payments,
                       'Total Amount',
                       '\$${total.toStringAsFixed(2)}',
                       isAmount: true,
@@ -129,12 +130,20 @@ class OrderSuccessScreen extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.track_changes),
-                    label: const Text('Track Your Order'),
+                    label: const Text(
+                      'Track Your Order',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
+                      elevation: 4,
                       backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
@@ -145,7 +154,7 @@ class OrderSuccessScreen extends StatelessWidget {
 
               //Back to Home Button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -154,13 +163,20 @@ class OrderSuccessScreen extends StatelessWidget {
                       Navigator.of(context).popUntil((route) => route.isFirst);
                     },
                     icon: const Icon(Icons.home),
-                    label: const Text('Back to Home'),
+                    label: const Text(
+                      'Back to Home',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     style: OutlinedButton.styleFrom(
+                      elevation: 4,
                       foregroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: Colors.green, width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      side: const BorderSide(color: Colors.green, width: 1.0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
@@ -184,7 +200,7 @@ class OrderSuccessScreen extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(icon, color: Colors.green, size: 20),
+        Icon(icon, color: Colors.green, size: 24),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -198,7 +214,7 @@ class OrderSuccessScreen extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 18,
                   fontWeight: isAmount ? FontWeight.bold : FontWeight.w600,
                   color: isAmount ? Colors.green : Colors.black87,
                 ),

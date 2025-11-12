@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MiniMapWidget extends StatefulWidget {
   final LatLng initialLocation;
@@ -18,9 +19,11 @@ class MiniMapWidget extends StatefulWidget {
 }
 
 class _MiniMapWidgetState extends State<MiniMapWidget> {
-  late GoogleMapController _mapController;
+  GoogleMapController? _mapController;
   late LatLng _currentLocation;
   final Set<Marker> _markers = {};
+  bool _mapReady = false;
+  bool _isLocating = false;
 
   @override
   void initState() {
@@ -44,13 +47,97 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
     );
   }
 
+  Future<void> _goToCurrentLocation() async {
+    if (!_mapReady || _mapController == null) return;
+
+    try {
+      setState(() => _isLocating = true);
+
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location services are disabled.')),
+          );
+        }
+        setState(() => _isLocating = false);
+        return;
+      }
+
+      // Check permission status
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location permissions are denied')),
+            );
+          }
+          setState(() => _isLocating = false);
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location permissions are permanently denied'),
+            ),
+          );
+        }
+        setState(() => _isLocating = false);
+        return;
+      }
+
+      // Get current position
+      final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final userLocation = LatLng(position.latitude, position.longitude);
+
+      // Update the map location
+      setState(() {
+        _currentLocation = userLocation;
+        _updateMarker();
+      });
+
+      // Animate camera to current location
+      await _mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: userLocation, zoom: 16),
+        ),
+      );
+
+      // Notify parent widget of location change
+      widget.onLocationChanged?.call(userLocation);
+    } catch (e) {
+      print('Location error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to get location: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      height: 150,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(8),
+          bottomRight: Radius.circular(8),
+        ),
         border: Border.all(color: Colors.grey.shade300),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4),
@@ -69,6 +156,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
               markers: _markers,
               onMapCreated: (GoogleMapController controller) {
                 _mapController = controller;
+                setState(() => _mapReady = true);
               },
               onTap: widget.interactive
                   ? (LatLng location) {
@@ -93,13 +181,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
               bottom: 16,
               right: 16,
               child: GestureDetector(
-                onTap: () {
-                  _mapController.animateCamera(
-                    CameraUpdate.newCameraPosition(
-                      CameraPosition(target: _currentLocation, zoom: 16),
-                    ),
-                  );
-                },
+                onTap: _isLocating ? null : _goToCurrentLocation,
                 child: Container(
                   width: 48,
                   height: 48,
@@ -114,17 +196,30 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.my_location,
-                    color: Colors.blue,
-                    size: 24,
-                  ),
+                  child: _isLocating
+                      ? Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.blue.shade600,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const Icon(
+                          Icons.my_location,
+                          color: Colors.blue,
+                          size: 24,
+                        ),
                 ),
               ),
             ),
 
-            // Loading indicator (optional)
-            if (_mapController == null)
+            // Loading indicator (map initialization)
+            if (!_mapReady)
               Center(
                 child: CircularProgressIndicator(color: Colors.green.shade600),
               ),
@@ -136,7 +231,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
 
   @override
   void dispose() {
-    _mapController.dispose();
+    _mapController?.dispose();
     super.dispose();
   }
 }
