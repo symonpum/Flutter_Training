@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class FoodItem {
   final String id;
   final String name;
@@ -35,6 +37,7 @@ class FoodItem {
     this.preparationTime = 0,
   });
 
+  // ==================== FACTORIES ====================
   factory FoodItem.fromMap(Map<String, dynamic> m) {
     return FoodItem(
       id: (m['id'] ?? '').toString(),
@@ -61,6 +64,13 @@ class FoodItem {
     );
   }
 
+  factory FoodItem.fromJson(Map<String, dynamic> json) =>
+      FoodItem.fromMap(json);
+
+  static FoodItem fromJsonString(String jsonStr) =>
+      FoodItem.fromJson(jsonDecode(jsonStr));
+
+  // ==================== TO JSON ====================
   Map<String, dynamic> toMap() => {
     'id': id,
     'name': name,
@@ -78,4 +88,17 @@ class FoodItem {
     'calories': calories,
     'preparationTime': preparationTime,
   };
+
+  Map<String, dynamic> toJson() => toMap();
+
+  String toJsonString() => jsonEncode(toJson());
+
+  // ==================== EQUALITY ====================
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FoodItem && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

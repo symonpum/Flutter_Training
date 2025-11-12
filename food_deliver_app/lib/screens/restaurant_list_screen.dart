@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart'; // Add geolocator import to use location services in pubspec.yaml
+
 import '../models/restaurant.dart';
 import '../services/restaurant_service.dart';
 import '../widgets/restaurant_card.dart';
 import 'restaurant_detail_screen.dart';
 
+class NearestRestaurantScreen extends StatelessWidget {
+  final double latitude;
+  final double longitude;
+
+  const NearestRestaurantScreen({
+    super.key,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Nearby Restaurants")),
+      body: Center(child: Text("Your location:\n$latitude, $longitude")),
+    );
+  }
+}
+
 class RestaurantListScreen extends StatefulWidget {
   const RestaurantListScreen({super.key});
+
   @override
   State<RestaurantListScreen> createState() => _RestaurantListScreenState();
 }
@@ -41,6 +63,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   Future<void> _fetch() async {
     _loading.value = true;
     _error.value = null;
+
     try {
       final list = await RestaurantService.instance.fetchRestaurants(
         query: _query,
@@ -78,9 +101,48 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Restaurants'),
+        elevation: 10, // for shadow effect
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
+        centerTitle: true,
+
+        /// TITLE and Location Icon
+        title: Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Food Delivery App',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+            ),
+
+            IconButton(
+              icon: const Icon(Icons.location_on_outlined),
+              onPressed: () async {
+                final perm = await Geolocator.requestPermission();
+                if (perm == LocationPermission.denied ||
+                    perm == LocationPermission.deniedForever) {
+                  return;
+                }
+
+                final pos = await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.high,
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NearestRestaurantScreen(
+                      latitude: pos.latitude,
+                      longitude: pos.longitude,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(94),
           child: Padding(
@@ -133,14 +195,16 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
           ),
         ),
       ),
+
       body: Column(
         children: [
           Expanded(
             child: ValueListenableBuilder<bool>(
               valueListenable: _loading,
               builder: (context, loading, _) {
-                if (loading)
+                if (loading) {
                   return const Center(child: CircularProgressIndicator());
+                }
                 return ValueListenableBuilder<String?>(
                   valueListenable: _error,
                   builder: (context, error, _) {

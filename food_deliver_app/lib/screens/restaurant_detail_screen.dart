@@ -44,9 +44,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         actions: [
-          ValueListenableBuilder<CartProvider>(
-            valueListenable: CartProvider.instanceNotifier,
-            builder: (context, cart, _) {
+          // LIVE update CART BADGE using Observer Pattern Singleton
+          ValueListenableBuilder<List<CartLine>>(
+            valueListenable: CartProvider().cartNotifier,
+            builder: (context, items, _) {
+              final cart = CartProvider();
               return Stack(
                 alignment: Alignment.topRight,
                 children: [
@@ -59,6 +61,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                       );
                     },
                   ),
+                  // Show badge with total quantity
                   if (cart.totalItems > 0)
                     Positioned(
                       right: 6,
@@ -294,8 +297,27 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                                 return FoodItemCard(
                                   item: item,
                                   onAdd: () {
-                                    CartProvider.instanceNotifier.value.addItem(
+                                    //passing restaurant info
+                                    CartProvider().addItem(
                                       item,
+                                      qty: 1,
+                                      restaurantId: r.id, // Pass restaurant ID
+                                      restaurantName:
+                                          r.name, //  Pass restaurant name
+                                      minOrder:
+                                          r.minOrder, // Pass minimum order
+                                    );
+
+                                    // Show feedback
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${item.name} added to cart',
+                                        ),
+                                        duration: const Duration(
+                                          milliseconds: 800,
+                                        ),
+                                      ),
                                     );
                                   },
                                 );
@@ -313,7 +335,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         },
       ),
       // floatingActionButton: ValueListenableBuilder<CartProvider>(
-      //   valueListenable: CartProvider.instanceNotifier,
+      //   valueListenable: CartProvider().cartNotifier,
       //   builder: (context, cart, _) {
       //     return FloatingActionButton.extended(
       //       onPressed: () {
