@@ -18,22 +18,26 @@ samples, guidance on mobile development, and a full API reference.
 ______________
 
 Food Delivery Mobile App Development Assignment Project Overview
+
 Develop a complete Food Delivery mobile application using Flutter with basic state management techniques. This is a rewarded assignment where students can earn  upon successful completion.Timeline
  October 19, 2025
  November 2, 2025 (2 weeks)
  Complete all required functionality on or before the deadline
 Technical Requirements State Management (Required)
+
 You must use one or more of the following approaches:
 ValueNotifier
 ValueListenableBuilder
 setState()
 ChangeNotifier
+
 State Management (Prohibited)
 The following libraries are :
 Provider
 Riverpod
 BLoC / BLoC Cubit
 GetX
+
 Development Guidelines
 You are encouraged to use AI tools for assistance
 Follow the provided project structure and theme specifications
@@ -60,6 +64,7 @@ Compress your entire project folder (ZIP or RAR)
 Ensure all files and assets are included
 Submit the compressed file
 Submission Checklist
+
 Before submitting, verify that your project includes:
 ✅ All source code files
 ✅ Assets and images
@@ -74,3 +79,4 @@ Your submission will be assessed on:
  Clean, organized, and readable code
  Proper use of allowed techniques only
  Matches design specifications
+
