@@ -3,6 +3,7 @@ import '../providers/cart_provider.dart';
 import '../widgets/cart_item_widget.dart';
 import 'checkout_screen.dart';
 
+// Screen to display the user's cart
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -10,6 +11,7 @@ class CartScreen extends StatefulWidget {
   State<CartScreen> createState() => _CartScreenState();
 }
 
+// State class for CartScreen
 class _CartScreenState extends State<CartScreen> {
   late CartProvider _cartProvider;
 
@@ -43,6 +45,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
+      // Body with cart items and summary uses ValueListenableBuilder to react to cart changes in live mode
       body: ValueListenableBuilder<List<CartLine>>(
         valueListenable: _cartProvider.cartNotifier,
         builder: (context, items, _) {
@@ -89,11 +92,11 @@ class _CartScreenState extends State<CartScreen> {
               ),
             );
           }
-
+          // Main cart view with items and summary
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Restaurant info
+              // Restaurant info section in the cart
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -115,7 +118,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
 
-              // Cart Items List
+              // Cart Items List to list all items in the cart
               Expanded(
                 child: ListView.builder(
                   itemCount: items.length,
@@ -125,7 +128,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
 
-              // Summary Section
+              // Summary Section with subtotal, fees, total and checkout button
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -145,7 +148,7 @@ class _CartScreenState extends State<CartScreen> {
 
                     return Column(
                       children: [
-                        // Minimum order warning
+                        // Minimum order validation message if below minimum order amount from restaurant
                         if (isBelowMinimum) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -183,7 +186,7 @@ class _CartScreenState extends State<CartScreen> {
                           const SizedBox(height: 16),
                         ],
 
-                        // Subtotal
+                        // Subtotal display
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -205,7 +208,7 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Delivery Fee
+                        // Delivery Fee display
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -227,7 +230,7 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Tax & Fees
+                        // Tax & Fees display
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -253,7 +256,7 @@ class _CartScreenState extends State<CartScreen> {
                         Container(height: 1, color: Colors.grey.shade600),
                         const SizedBox(height: 12),
 
-                        // Total
+                        // Total display
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -277,7 +280,7 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Checkout Button
+                        // Checkout Button display to proceed to checkout if minimum order met
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -302,7 +305,7 @@ class _CartScreenState extends State<CartScreen> {
 
                                     // Optional: handle result from CheckoutScreen
                                     if (result != null) {
-                                      // e.g. clear cart, show confirmation, etc.
+                                      // clear cart, show confirmation...
                                     }
                                   },
                             child: const Text(

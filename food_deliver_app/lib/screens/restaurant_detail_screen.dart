@@ -45,6 +45,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
         foregroundColor: Colors.white,
         actions: [
           // LIVE update CART BADGE using Observer Pattern Singleton
+          // with ValueListenableBuilder to listen to cart changes
+          // and update badge count in real-time
           ValueListenableBuilder<List<CartLine>>(
             valueListenable: CartProvider().cartNotifier,
             builder: (context, items, _) {
@@ -61,7 +63,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                       );
                     },
                   ),
-                  // Show badge with total quantity
+                  // Show badge with total quantity of items in cart
                   if (cart.totalItems > 0)
                     Positioned(
                       right: 6,
@@ -89,7 +91,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
           ),
         ],
       ),
-
+      //=================== RESTAURANT DETAIL BODY ====================
+      // Body with FutureBuilder to load menu items
+      // and display restaurant details
+      // along with menu categorized in tabs
+      // =============================================================
       body: FutureBuilder<List<FoodItem>>(
         future: _menuFuture,
         builder: (context, snapshot) {
@@ -104,7 +110,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
             return const Center(child: Text('No menu items available'));
           }
 
-          // Extract categories from menu items
+          // Extract categories from menu items for tabs in menu from individual food items
           _categories = menu.map((item) => item.category).toSet().toList();
           _tabController ??= TabController(
             length: _categories.length,
@@ -115,7 +121,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Banner image
+                // Banner image of restaurant with error handling
                 Stack(
                   children: [
                     SizedBox(
@@ -143,7 +149,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Name + rating
+                      // Name + rating row of restaurant
                       Row(
                         children: [
                           Expanded(
@@ -188,7 +194,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
                       const SizedBox(height: 6),
 
-                      // Restaurant description
+                      // Restaurant description text from json data
                       Text(
                         r.description,
                         style: const TextStyle(
@@ -198,7 +204,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                       ),
                       const SizedBox(height: 12),
 
-                      // Cuisine tags
+                      // Cuisine tags from restaurant data check if not empty
+                      // then show horizontal list of chips
+                      // for each tag available in restaurant tags list
                       if (r.tags.isNotEmpty)
                         SizedBox(
                           height: 36,
@@ -223,7 +231,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
                       const SizedBox(height: 12),
 
-                      // Delivery, preparation, minimum cards
+                      // Delivery, preparation, minimum cards row from restaurant data
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
@@ -255,7 +263,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                         ),
                       ),
 
-                      // Review chip
+                      // Review chip to navigate to reviews screen with restaurant id and name
                       Align(
                         alignment: Alignment.center,
                         child: Padding(
@@ -271,7 +279,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
 
                       const SizedBox(height: 16),
 
-                      // Menu Tabs
+                      // Menu Tabs for categories extracted from menu items
+                      // each tab shows list of food items in that category
+                      // with add to cart button
                       TabBar(
                         controller: _tabController,
                         isScrollable: true,
@@ -297,7 +307,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                                 return FoodItemCard(
                                   item: item,
                                   onAdd: () {
-                                    //passing restaurant info
+                                    //passing restaurant info from detail screen to cart provider when adding item to cart
                                     CartProvider().addItem(
                                       item,
                                       qty: 1,
@@ -308,7 +318,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
                                           r.minOrder, // Pass minimum order
                                     );
 
-                                    // Show feedback
+                                    // Show feedback snackbar on adding item to cart successfully
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
@@ -334,6 +344,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
           );
         },
       ),
+      //=================== CART FLOATING ACTION BUTTON ====================
       // floatingActionButton: ValueListenableBuilder<CartProvider>(
       //   valueListenable: CartProvider().cartNotifier,
       //   builder: (context, cart, _) {
@@ -354,7 +365,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen>
   }
 }
 
-// Restuarant widgets Constructors
+// Restuarant widgets Constructors for info cards and review chip
 Widget _infoCard({
   required IconData icon,
   required String label,
@@ -404,14 +415,15 @@ Widget _infoCard({
   );
 }
 
+// Review chip widget to navigate to reviews screen using TextButton.icon
 Widget _reviewChip(
   BuildContext context,
   String restaurantId,
   String restaurantName,
   int reviewCount,
 ) {
-  return InkWell(
-    onTap: () {
+  return OutlinedButton.icon(
+    onPressed: () {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -422,29 +434,20 @@ Widget _reviewChip(
         ),
       );
     },
-    borderRadius: BorderRadius.circular(16),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade600),
+    icon: const Icon(Icons.star_border, size: 16, color: Colors.green),
+    label: Text(
+      'See Reviews ($reviewCount)',
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        color: Colors.green,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.star_border, size: 16, color: Colors.green),
-          const SizedBox(width: 6),
-          Text(
-            'See Reviews ($reviewCount)',
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
+    ),
+    style: OutlinedButton.styleFrom(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      side: BorderSide(color: Colors.grey.shade600),
+      backgroundColor: Colors.grey.shade50,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
     ),
   );
 }

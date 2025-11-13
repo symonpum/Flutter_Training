@@ -25,14 +25,14 @@ class RestaurantCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Top: cover image with overlays (Stack)
+            // Restaurant Cover image with overlays (using Stack)
             SizedBox(
               height: 160,
               width: double.infinity,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Cover image
+                  // Cover image from network with error handling and fallback placeholder
                   restaurant.imageUrl.isNotEmpty
                       ? Image.network(
                           restaurant.imageUrl,
@@ -55,7 +55,7 @@ class RestaurantCard extends StatelessWidget {
                           ),
                         ),
 
-                  // Gradient for readability
+                  // Gradient for readability of overlays at the bottom
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -71,7 +71,7 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Open/Closed status badge
+                  // Open/Closed status badge of each restaurant at the top right
                   Positioned(
                     right: 12,
                     top: 12,
@@ -96,7 +96,7 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ),
 
-                  // delivery time stack
+                  // delivery time stack at the bottom left on the cover image
                   Positioned(
                     left: 12,
                     bottom: 12,
@@ -134,7 +134,8 @@ class RestaurantCard extends StatelessWidget {
 
             const Divider(height: 1),
 
-            // Restuarant details
+            // Restaurant details section
+            // including name, rating, description, categories, delivery fee, minimum order
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Column(
@@ -157,7 +158,7 @@ class RestaurantCard extends StatelessWidget {
 
                       const SizedBox(width: 8),
 
-                      // Rating chip on the right end
+                      // Rating chip on the right end of the name row
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -191,7 +192,7 @@ class RestaurantCard extends StatelessWidget {
 
                   const SizedBox(height: 6),
 
-                  // Description
+                  // Description below the name and rating chip
                   Text(
                     restaurant.description,
                     style: const TextStyle(fontSize: 13, color: Colors.black87),
@@ -217,8 +218,11 @@ class RestaurantCard extends StatelessWidget {
                               style: const TextStyle(fontSize: 12),
                             ),
                             visualDensity: VisualDensity.compact,
-                            backgroundColor: Colors.grey.shade100,
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            backgroundColor: Colors.grey.shade300,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           );
                         },
                       ),

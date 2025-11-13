@@ -19,7 +19,8 @@ class _CartItemWidgetState extends State<CartItemWidget> {
   void initState() {
     super.initState();
     _cartProvider = CartProvider();
-    // Listen to cart changes
+    // Listen to cart changes for live updates
+    // using Singleton & Observer pattern
     _cartProvider.cartNotifier.addListener(_onCartChanged);
   }
 
@@ -39,9 +40,11 @@ class _CartItemWidgetState extends State<CartItemWidget> {
     final foodId = item.id;
 
     // Get the latest cart line from provider
+    // to reflect any changes (quantity, note, etc.)
     final currentLine = _cartProvider.getItem(foodId);
 
-    // If the item was removed (e.g., quantity went to 0), don't build anything
+    // if item was removed from cart, don't display anything
+    // just return an empty SizedBox
     if (currentLine == null) {
       return const SizedBox.shrink();
     }
@@ -66,11 +69,11 @@ class _CartItemWidgetState extends State<CartItemWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top: image + info + delete
+          // Top section: image + info + delete button
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Food image
+              // Food image from network with error handling
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
@@ -96,7 +99,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ✅ Food Name + Delete Button (aligned right)
+                    // Food Name + Delete Button
                     Row(
                       children: [
                         Expanded(
@@ -124,7 +127,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
 
                     const SizedBox(height: 4),
 
-                    // Price per item
+                    // Price per item row
                     Text(
                       '\$${item.price.toStringAsFixed(2)} each',
                       style: const TextStyle(
@@ -134,7 +137,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Quantity controls + Total price row
+                    // Quantity controls with +/- buttons and Total price row calculation
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -147,7 +150,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           ),
                           child: Row(
                             children: [
-                              // Minus button
+                              // Minus button action
                               IconButton(
                                 icon: const Icon(Icons.remove, size: 18),
                                 padding: EdgeInsets.zero,
@@ -160,7 +163,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                                 },
                               ),
 
-                              // Quantity display (LIVE UPDATE)
+                              // Quantity display (LIVE UPDATE) after changes based on +/- buttons is clicked
                               ValueListenableBuilder<List<CartLine>>(
                                 valueListenable: _cartProvider.cartNotifier,
                                 builder: (context, cartItems, _) {
@@ -183,7 +186,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                                 },
                               ),
 
-                              // Plus button
+                              // Plus button action
                               IconButton(
                                 icon: const Icon(Icons.add, size: 18),
                                 padding: EdgeInsets.zero,
@@ -199,7 +202,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           ),
                         ),
 
-                        // Total price (LIVE UPDATE)
+                        // Total price (LIVE UPDATE) after quantity changes
                         ValueListenableBuilder<List<CartLine>>(
                           valueListenable: _cartProvider.cartNotifier,
                           builder: (context, cartItems, _) {
@@ -226,7 +229,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
 
           const SizedBox(height: 12),
 
-          // Special instructions section
+          // Special instructions section with edit/add button and display live updates
           if (displayNote != null && displayNote.isNotEmpty)
             // Show saved instructions
             Container(
@@ -280,7 +283,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
               ),
             )
           else
-            // Show add instructions button
+            // Show add instructions button if no instructions yet exist
             GestureDetector(
               onTap: () => _editInstructions(context, foodId),
               child: Container(
@@ -314,7 +317,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
     );
   }
 
-  /// Show dialog to edit special instructions
+  /// Show dialog to edit special instructions for the cart item
   Future<void> _editInstructions(BuildContext context, String foodId) async {
     final currentLine = _cartProvider.getItem(foodId);
     String tempNote = currentLine?.note ?? '';

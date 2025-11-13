@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/review.dart';
 import '../services/review_service.dart';
+import '../widgets/rating_widget.dart';
 
 class ReviewsScreen extends StatefulWidget {
   final String restaurantId;
@@ -20,7 +21,7 @@ class _ReviewsScreenState extends State<ReviewsScreen>
     with SingleTickerProviderStateMixin {
   late Future<List<Review>> _reviewsFuture;
   late TabController _tabController;
-
+  // Selected rating for new review
   double _selectedRating = 0;
   final TextEditingController _controller = TextEditingController();
 
@@ -46,6 +47,8 @@ class _ReviewsScreenState extends State<ReviewsScreen>
     });
   }
 
+  // Submit a new review and refresh the reviews list
+  // to include the newly added review.
   Future<void> _submitReview() async {
     if (_selectedRating == 0 || _controller.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -78,6 +81,8 @@ class _ReviewsScreenState extends State<ReviewsScreen>
     _loadReviews();
   }
 
+  // Build star icons based on rating
+  // size parameter allows customizing the icon size.
   List<Widget> _buildStars(double rating, {double size = 20}) {
     final fullStars = rating.floor();
     final hasHalfStar = (rating - fullStars) >= 0.5;
@@ -92,6 +97,8 @@ class _ReviewsScreenState extends State<ReviewsScreen>
     });
   }
 
+  // Get textual label for a given rating automatically.
+  // based on common rating descriptions.
   String _getRatingLabel(double rating) {
     if (rating <= 1.5) return 'Poor';
     if (rating <= 2.5) return 'Fair';
@@ -100,6 +107,7 @@ class _ReviewsScreenState extends State<ReviewsScreen>
     return 'Excellent';
   }
 
+  // method to build individual review card for the reviews list
   Widget _buildReviewCard(Review review) {
     final daysAgo = DateTime.now().difference(review.createdAt).inDays;
     return Card(
@@ -172,6 +180,8 @@ class _ReviewsScreenState extends State<ReviewsScreen>
     );
   }
 
+  // method to build the rating breakdown section Widget to show the distribution of ratings
+  // across different star levels.
   Widget _buildBreakdown(List<Review> reviews) {
     final breakdown = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
     for (final r in reviews) {
@@ -232,6 +242,11 @@ class _ReviewsScreenState extends State<ReviewsScreen>
         foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
+          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+          indicatorColor: Colors.white,
+          unselectedLabelColor: Colors.white54,
+          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
           tabs: const [
             Tab(text: 'Reviews'),
             Tab(text: 'Write Review'),
@@ -253,7 +268,8 @@ class _ReviewsScreenState extends State<ReviewsScreen>
                   child: Text('Error loading reviews: ${snapshot.error}'),
                 );
               }
-
+              // Data loaded from future successfully
+              // Calculate average rating and build UI accordingly.
               final reviews = snapshot.data ?? [];
               final avgRating = reviews.isEmpty
                   ? 0.0
@@ -269,7 +285,7 @@ class _ReviewsScreenState extends State<ReviewsScreen>
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Left column: Large rating display (like a circle)
+                          // Large rating display on the left column
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -294,13 +310,13 @@ class _ReviewsScreenState extends State<ReviewsScreen>
                             ],
                           ),
                           const SizedBox(width: 20),
-                          // Right column: Rating breakdown
+                          // Rating breakdown in to Bar on the right column
                           Expanded(child: _buildBreakdown(reviews)),
                         ],
                       ),
                     ),
 
-                    // Write Review button
+                    // Write Review button (full width) to switch to Write Review tab
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -334,7 +350,7 @@ class _ReviewsScreenState extends State<ReviewsScreen>
                       ),
                     ),
 
-                    // List of reviews
+                    // List of reviews individually
                     Column(
                       children: reviews.isEmpty
                           ? [

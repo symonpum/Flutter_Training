@@ -13,6 +13,7 @@ class LocationPickerScreen extends StatefulWidget {
   State<LocationPickerScreen> createState() => _LocationPickerScreenState();
 }
 
+// State class for LocationPickerScreen
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
   late GoogleMapController _mapController;
   late LatLng _selectedLocation;
@@ -36,10 +37,11 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       _selectedLocation = const LatLng(37.7749, -122.4194);
       _selectedAddressText = '';
     }
-
+    // Initialize marker and address
     _updateMarkerAndAddress();
   }
 
+  // Update marker on the map and fetch address
   void _updateMarkerAndAddress() {
     _markers.clear();
     _markers.add(
@@ -49,11 +51,12 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ),
     );
-
+    // Fetch address from coordinates
     _getAddressFromCoordinates(_selectedLocation);
     setState(() {});
   }
 
+  // Fetch address using geocoding package from coordinates by user
   Future<void> _getAddressFromCoordinates(LatLng location) async {
     setState(() => _isLoadingAddress = true);
     try {
@@ -74,6 +77,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     setState(() => _isLoadingAddress = false);
   }
 
+  // Search address and update map location accordingly
   Future<void> _searchAddress(String query) async {
     if (query.isEmpty) return;
 
@@ -91,7 +95,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             ),
           );
         }
-
+        // Update marker and address after search
         _updateMarkerAndAddress();
         _searchController.clear();
       }
@@ -105,6 +109,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     }
   }
 
+  // Get current location of the user
   Future<void> _getCurrentLocation() async {
     try {
       bool serviceEnabled;
@@ -146,7 +151,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         return;
       }
 
-      // Get current position
+      // Get current position by user using Geolocator package
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -160,7 +165,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           ),
         );
       }
-
+      // Update marker and address after getting current location
       _updateMarkerAndAddress();
     } catch (e) {
       print('Location error: $e');
@@ -172,6 +177,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     }
   }
 
+  // Create Address object from selected location
   Address _createAddressFromLocation(LatLng location) {
     return Address(
       id: DateTime.now().toString(),
@@ -218,7 +224,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       ),
       body: Stack(
         children: [
-          // Google Map (Full screen)
+          // Google Map (Full screen) using google_maps_flutter package
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _selectedLocation,
@@ -240,7 +246,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             zoomControlsEnabled: false,
           ),
 
-          // Search Bar Overlay (Top)
+          // Search bar at the top of the map using TextField widget
           Positioned(
             top: 16,
             left: 16,
@@ -264,15 +270,15 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       )
                     : null,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(
@@ -285,7 +291,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             ),
           ),
 
-          // Bottom Sheet - Delivery Location Info
+          // Delivery Location Info and Buttons at the bottom
           Positioned(
             bottom: 0,
             left: 0,
@@ -323,7 +329,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     ),
                   ),
 
-                  // Location Label
+                  // Location Label on map
                   const Text(
                     'Delivery Location',
                     style: TextStyle(
@@ -334,7 +340,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Address Display
+                  // Address Display on map
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -372,7 +378,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Buttons Row
+                  // Buttons Row - Current Location & Confirm Location buttons
                   Row(
                     children: [
                       // Current Location Button - Outlined
@@ -419,7 +425,6 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       ),
                     ],
                   ),
-
                   // Safe area bottom padding
                   SizedBox(height: MediaQuery.of(context).padding.bottom),
                 ],
@@ -431,6 +436,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     );
   }
 
+  // Dispose controllers to free resources and avoid memory leaks
   @override
   void dispose() {
     _searchController.dispose();

@@ -5,14 +5,13 @@ import '../services/order_service.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   final String orderId;
-  // --- LOGIC FIX: REMOVED items AND status ---
+  // REMOVED items AND status
   // final List<FoodItem> items;
   // final String status;
 
   const OrderTrackingScreen({
     required this.orderId,
-    // required this.items, // Removed
-    // required this.status, // Removed
+    // Only need orderId to fetch order details
     super.key,
   });
 
@@ -29,7 +28,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     _orderFuture = OrderService.getOrderById(widget.orderId);
   }
 
-  // (Your helper methods)
+  // Method to map OrderStatus to progress percentage
   int _getProgressPercentage(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
@@ -38,7 +37,6 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
         return 20;
       case OrderStatus.preparing:
         return 40;
-      // === FIXED: Added 'pickedUp' ===
       case OrderStatus.pickedUp:
         return 60;
       case OrderStatus.enroute:
@@ -50,13 +48,13 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     }
   }
 
+  // Method to get status label from OrderStatus enum
   String _getStatusLabel(OrderStatus status) {
     switch (status) {
       case OrderStatus.confirmed:
         return 'Order Confirmed';
       case OrderStatus.preparing:
         return 'Preparing Food';
-      // === FIXED: Added 'pickedUp' ===
       case OrderStatus.pickedUp:
         return 'Ready for Pickup';
       case OrderStatus.enroute:
@@ -70,6 +68,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     }
   }
 
+  // Cancel Order Dialog to confirm cancellation or not
   void _showCancelDialog(Order order) {
     showDialog(
       context: context,
@@ -94,6 +93,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
+  // Method to cancel the order and update UI accordingly
   Future<void> _cancelOrder(Order order) async {
     try {
       await OrderService.updateOrderStatus(order.id, OrderStatus.cancelled);
@@ -135,7 +135,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      // --- LOGIC FIX: Use FutureBuilder ---
+      //use FutureBuilder to load order details based on orderId
       body: FutureBuilder<Order?>(
         future: _orderFuture,
         builder: (context, snapshot) {
@@ -151,7 +151,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             );
           }
 
-          // --- LOGIC FIX: Get order from snapshot ---
+          // main content of the screen using methods called
           final order = snapshot.data!;
           return SingleChildScrollView(
             child: Column(
@@ -171,13 +171,15 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  // ==================== CURRENT STATUS CARD ====================
+  // Current Status of the Order Card
   Widget _buildCurrentStatusCard(Order order) {
     final isDelivered = order.status == OrderStatus.delivered;
     final isCancelled = order.status == OrderStatus.cancelled;
 
     // A check for a potential asset error
-    String imageAsset = 'assets/icons/preparing.png';
+    // change to imageNetwork if you don't have the asset
+    String imageNetwork = 'https://example.com/assets/icons/preparing.png';
+    //String imageAsset = 'assets/icons/preparing.png'; // if have the asset
     Widget iconWidget;
 
     if (isCancelled) {
@@ -185,13 +187,13 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     } else if (isDelivered) {
       iconWidget = Icon(Icons.check_circle, size: 50, color: Colors.green);
     } else {
-      // Fallback for asset
-      iconWidget = Image.asset(
-        imageAsset,
+      // Fallback for image loading from network
+      iconWidget = Image.network(
+        imageNetwork,
         width: 50,
         height: 50,
         errorBuilder: (_, __, ___) => Icon(
-          Icons.restaurant, // Fallback icon
+          Icons.restaurant, // Fallback icon if image fails to load
           size: 50,
           color: Colors.orange,
         ),
@@ -265,7 +267,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  // ==================== ORDER PROGRESS CARD ====================
+  // Order Progress Card
   Widget _buildOrderProgressCard(Order order) {
     final progressPercent = _getProgressPercentage(order.status);
     final isCancelled = order.status == OrderStatus.cancelled;
@@ -349,6 +351,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
+  // Status Step Widget of the Progress Card
   Widget _buildStatusStep(
     String label,
     OrderStatus currentStatus,
@@ -390,8 +393,9 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
+  // method to determine if a step is completed based on current status
   bool _isStatusCompleted(OrderStatus current, OrderStatus step) {
-    // === FIXED: Updated logic to use the 5-step enum ===
+    // based on the defined order flow in OrderStatus enum
     final statusOrder = [
       OrderStatus.confirmed,
       OrderStatus.preparing,
@@ -402,7 +406,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     final currentIndex = statusOrder.indexOf(current);
     final stepIndex = statusOrder.indexOf(step);
 
-    // Handle edge cases like 'pending' or 'cancelled'
+    // In case 'pending' or 'cancelled' status is encountered to avoid false positives
     if (current == OrderStatus.cancelled) return false;
     if (stepIndex == -1) return false; // Step not in the flow
     if (currentIndex == -1) {
@@ -413,7 +417,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     return stepIndex <= currentIndex;
   }
 
-  // ==================== ORDER DETAILS CARD ====================
+  // Order Details Card Widget
   Widget _buildOrderDetailsCard(Order order) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -449,6 +453,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
+  // Detail Row Widget for Order Details Card
   Widget _detailRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,7 +481,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  // ==================== ORDER ITEMS CARD ====================
+  // Order Items Card Widget
   Widget _buildOrderItemsCard(Order order) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -498,7 +503,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           ),
           const SizedBox(height: 16),
 
-          // --- LOGIC FIX: 'item' is the FoodItem ---
+          // List of order items using order.items
           for (final item in order.items)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -532,7 +537,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                         ),
                         const SizedBox(width: 8),
 
-                        // Item name
+                        // Item name display
                         Expanded(
                           child: Text(
                             item.name, // Use item.name
@@ -548,9 +553,9 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                     ),
                   ),
 
-                  // Item total
+                  // Item total price display
                   Text(
-                    '\$${item.totalPrice.toStringAsFixed(2)}', // Use item.totalPrice
+                    '\$${item.totalPrice.toStringAsFixed(2)}', // Use item.totalPrice as calculated field from model
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -564,7 +569,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           Divider(color: Colors.grey.shade300),
           const SizedBox(height: 12),
 
-          // Total row
+          // Total row display
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -591,7 +596,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  // ==================== CANCEL ORDER BUTTON ====================
+  // Cancel Order Button Widget
   Widget _buildCancelOrderButton(Order order) {
     final canCancel =
         order.status != OrderStatus.delivered &&
@@ -624,7 +629,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  // ==================== NEED HELP BUTTON ====================
+  // Need Help Button Widget
   Widget _buildNeedHelpButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -651,7 +656,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  // ==================== HELPERS ====================
+  // Helper method to format time differences for display the order time correctly
   String _formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);

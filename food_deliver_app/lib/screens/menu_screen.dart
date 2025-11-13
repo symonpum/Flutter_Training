@@ -18,6 +18,7 @@ class MenuScreen extends StatefulWidget {
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
+// Menu Screen State Class using StatefulWidget
 class _MenuScreenState extends State<MenuScreen> {
   late CartProvider _cartProvider;
   List<FoodItem> foodItems = [];
@@ -32,6 +33,8 @@ class _MenuScreenState extends State<MenuScreen> {
 
   void _loadMenuItems() {
     // Simulated data - replace with actual service call
+    // For demonstration, we use hardcoded data
+    // In a real app, fetch data from an API or database or JSON file
     setState(() {
       foodItems = [
         FoodItem(
@@ -39,8 +42,7 @@ class _MenuScreenState extends State<MenuScreen> {
           name: 'Margherita Pizza',
           description: 'Classic pizza with tomato, mozzarella, and basil',
           price: 12.99,
-          image:
-              'https://via.placeholder.com/300x300?text=Margherita+Pizza',
+          image: 'https://via.placeholder.com/300x300?text=Margherita+Pizza',
           restaurantId: widget.restaurantId,
           category: 'Pizza',
           rating: 4.5,
@@ -49,11 +51,9 @@ class _MenuScreenState extends State<MenuScreen> {
         FoodItem(
           id: '2',
           name: 'Cheese Burger',
-          description:
-              'Juicy burger with cheddar cheese, lettuce, and tomato',
+          description: 'Juicy burger with cheddar cheese, lettuce, and tomato',
           price: 8.99,
-          image:
-              'https://via.placeholder.com/300x300?text=Cheese+Burger',
+          image: 'https://via.placeholder.com/300x300?text=Cheese+Burger',
           restaurantId: widget.restaurantId,
           category: 'Burgers',
           rating: 4.3,
@@ -75,8 +75,7 @@ class _MenuScreenState extends State<MenuScreen> {
           name: 'Spaghetti Carbonara',
           description: 'Creamy pasta with bacon and parmesan',
           price: 11.99,
-          image:
-              'https://via.placeholder.com/300x300?text=Spaghetti+Carbonara',
+          image: 'https://via.placeholder.com/300x300?text=Spaghetti+Carbonara',
           restaurantId: widget.restaurantId,
           category: 'Pasta',
           rating: 4.6,
@@ -87,8 +86,8 @@ class _MenuScreenState extends State<MenuScreen> {
     });
   }
 
+  // Add item to cart with SnackBar feedback method
   void _addToCart(FoodItem food) {
-    // ✅ CORRECT: Pass FoodItem object (not individual fields)
     _cartProvider.addItem(
       food,
       qty: 1,
@@ -123,6 +122,7 @@ class _MenuScreenState extends State<MenuScreen> {
           // Cart Icon Badge - LIVE UPDATE
           Padding(
             padding: const EdgeInsets.all(16.0),
+            // Using ValueListenableBuilder to listen to cart changes and update live
             child: ValueListenableBuilder<List<CartLine>>(
               valueListenable: CartProvider().cartNotifier,
               builder: (context, cartItems, _) {
@@ -179,7 +179,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Food Image
+                        // Food Image with error handling
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
@@ -197,7 +197,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         ),
                         const SizedBox(width: 12),
 
-                        // Food Details
+                        // Food Details and Add Button
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

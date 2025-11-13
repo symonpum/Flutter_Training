@@ -53,12 +53,12 @@ class FoodItemCard extends StatelessWidget {
 
             const SizedBox(width: 12),
 
-            // Right column: Details
+            // Right Section: Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name + Price row
+                  // Name + Price row of food item
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -86,7 +86,7 @@ class FoodItemCard extends StatelessWidget {
 
                   const SizedBox(height: 6),
 
-                  // Description
+                  // Description text of food item
                   Text(
                     item.description,
                     maxLines: 2,
@@ -96,11 +96,11 @@ class FoodItemCard extends StatelessWidget {
 
                   const SizedBox(height: 8),
 
-                  // Rating + reviews + chips row
+                  // Rating + reviews + chips row of food item
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Food Modifier chips
+                      // Food Modifier chips like Spicy, Vegetarian, Vegan
                       Row(
                         children: [
                           if (item.isSpicy)
@@ -136,7 +136,7 @@ class FoodItemCard extends StatelessWidget {
                         ],
                       ),
 
-                      // Rating + reviews
+                      // Rating + reviews count of food item
                       Row(
                         children: [
                           const Icon(
@@ -167,7 +167,7 @@ class FoodItemCard extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // Add button
+                  // Add button to add food item to cart
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(

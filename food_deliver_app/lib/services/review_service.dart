@@ -5,10 +5,11 @@ import '../models/review.dart';
 class ReviewService {
   ReviewService._internal();
   static final ReviewService instance = ReviewService._internal();
-
+  // Ngrok base URL to backend server (API endpoint) where reviews data is hosted
   final String baseUrl =
       'https://unledged-temple-undebilitative.ngrok-free.dev';
 
+  // fetch reviews for a specific restaurant by restaurant ID
   Future<List<Review>> fetchForRestaurant(String restaurantId) async {
     final url = Uri.parse('$baseUrl/reviews?restaurantId=$restaurantId');
     final res = await http.get(url);
@@ -25,6 +26,7 @@ class ReviewService {
     }
   }
 
+  // post a new review to the backend server for a restaurant (JSON response)
   Future<Review> postReview(Review review) async {
     final url = Uri.parse('$baseUrl/reviews');
     final res = await http.post(

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+//mini map widget to show location preview and allow user to pick location
 class MiniMapWidget extends StatefulWidget {
   final LatLng initialLocation;
   final void Function(LatLng)? onLocationChanged;
   final bool interactive;
-
+  // Constructor for MiniMapWidget with required initialLocation and optional onLocationChanged and interactive flag
   const MiniMapWidget({
     required this.initialLocation,
     this.onLocationChanged,
@@ -47,13 +48,14 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
     );
   }
 
+  // Method to get current location and update the map
   Future<void> _goToCurrentLocation() async {
     if (!_mapReady || _mapController == null) return;
 
     try {
       setState(() => _isLocating = true);
 
-      // Check if location services are enabled
+      // Check if location services are enabled to get current position
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (mounted) {
@@ -65,7 +67,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
         return;
       }
 
-      // Check permission status
+      // Check permission status and request if not granted
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -92,20 +94,20 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
         return;
       }
 
-      // Get current position
+      // Get current position of the device based on granted permissions
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
       final userLocation = LatLng(position.latitude, position.longitude);
 
-      // Update the map location
+      // Update the map location and marker
       setState(() {
         _currentLocation = userLocation;
         _updateMarker();
       });
 
-      // Animate camera to current location
+      // Animate camera to current location on the map
       await _mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(target: userLocation, zoom: 16),
@@ -128,6 +130,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
     }
   }
 
+  // Build method to render the mini map widget in Container
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -176,7 +179,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
               tiltGesturesEnabled: widget.interactive,
             ),
 
-            // Current Location Button (bottom right)
+            // Current Location Button ( on the bottom right) of the mini map
             Positioned(
               bottom: 16,
               right: 16,
@@ -218,7 +221,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
               ),
             ),
 
-            // Loading indicator (map initialization)
+            // Loading indicator (map initialization) at the center of the mini map
             if (!_mapReady)
               Center(
                 child: CircularProgressIndicator(color: Colors.green.shade600),

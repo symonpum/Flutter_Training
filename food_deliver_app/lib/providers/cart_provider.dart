@@ -1,4 +1,3 @@
-// lib/providers/cart_provider.dart
 import 'package:flutter/foundation.dart';
 import '../models/food_item.dart';
 
@@ -16,23 +15,23 @@ class CartProvider {
   // --- Observer Pattern: ValueNotifier as Subject ---
   final ValueNotifier<List<CartLine>> cartNotifier = ValueNotifier([]);
 
-  // Restaurant context
+  // Restaurant Context for the cart
   String? _restaurantId;
   String? _restaurantName;
   double _minimumOrder = 0.0;
 
-  // Fees & Tax
+  // Fees & Tax Rates for the cart
   double _taxRate = 0.08;
   double _deliveryFee = 2.99;
   double _platformFee = 0.0;
 
-  // Event callbacks for logging/analytics
+  // Event callbacks for logging/analytics or UI updates outside of listeners
   void Function(FoodItem item, int qty)? onItemAdded;
   void Function(String id)? onItemRemoved;
   void Function(String id, int qty)? onQuantityChanged;
   void Function()? onCartCleared;
 
-  // ==================== GETTERS ====================
+  // Get current cart items and restaurant
   List<CartLine> get items => cartNotifier.value;
   String? get restaurantId => _restaurantId;
   String? get restaurantName => _restaurantName;
@@ -54,9 +53,8 @@ class CartProvider {
   bool get isBelowMinimum => subtotal < _minimumOrder;
   bool get isEmpty => cartNotifier.value.isEmpty;
 
-  // ==================== CONVERSION FOR ORDER CREATION  ====================
-  /// Converts the current cart lines into a list of FoodItem models
-  /// with quantity and note injected via copyWith.
+  // Converts the current cart lines into a list of FoodItem models
+  // with quantity and note injected via copyWith.
   List<FoodItem> toOrderFoodItems() {
     return cartNotifier.value
         .map(
@@ -66,8 +64,7 @@ class CartProvider {
         .toList();
   }
 
-  // ==================== ADD ITEM ====================
-  /// Add item to cart with restaurant context
+  // Add item to cart with restaurant context
   void addItem(
     FoodItem item, {
     int qty = 1,
@@ -76,7 +73,7 @@ class CartProvider {
     String? restaurantName,
     double minOrder = 0.0,
   }) {
-    // If from different restaurant, clear cart
+    // If added from different restaurant > clear cart
     if (_restaurantId != null && _restaurantId != restaurantId) {
       _items.clear();
     }
@@ -85,6 +82,7 @@ class CartProvider {
     _restaurantName = restaurantName;
     _minimumOrder = minOrder;
 
+    // Check if item already exists in cart
     final List<CartLine> currentCart = List.from(cartNotifier.value);
     final existingIndex = currentCart.indexWhere(
       (line) => line.item.id == item.id,
@@ -97,19 +95,18 @@ class CartProvider {
         currentCart[existingIndex].note = note;
       }
     } else {
-      // New item
+      // New item added to cart
       currentCart.add(CartLine(item: item, quantity: qty, note: note));
     }
 
-    // Trigger callbacks
+    // Trigger callbacks if any
     if (onItemAdded != null) onItemAdded!(item, qty);
 
-    // Notify all listeners
+    // Notify all listeners about the change in cart
     cartNotifier.value = currentCart;
   }
 
-  // ==================== REMOVE ITEM ====================
-  /// Remove item from cart
+  // Remove item from cart
   void removeItem(String id) {
     final List<CartLine> currentCart = List.from(cartNotifier.value);
     currentCart.removeWhere((line) => line.item.id == id);
@@ -125,8 +122,8 @@ class CartProvider {
     cartNotifier.value = currentCart;
   }
 
-  // ==================== CHANGE QUANTITY ====================
-  /// Change quantity by delta (increase or decrease)
+  // Change quantity by increase or decrease quantity
+  // delta can be positive or negative to adjust quantity
   void changeQuantity(String id, int delta) {
     final List<CartLine> currentCart = List.from(cartNotifier.value);
     final index = currentCart.indexWhere((line) => line.item.id == id);
@@ -135,7 +132,7 @@ class CartProvider {
 
     currentCart[index].quantity += delta;
 
-    // Remove item if quantity becomes 0 or less
+    // Remove item from cart if the quantity becomes 0 or less than 0
     if (currentCart[index].quantity <= 0) {
       currentCart.removeAt(index);
       if (onItemRemoved != null) onItemRemoved!(id);
@@ -154,8 +151,7 @@ class CartProvider {
     cartNotifier.value = currentCart;
   }
 
-  // ==================== UPDATE NOTE ====================
-  /// Update special instructions for item
+  // Update special instructions (note) for item in cart
   void updateNote(String id, String note) {
     final List<CartLine> currentCart = List.from(cartNotifier.value);
     final index = currentCart.indexWhere((line) => line.item.id == id);
@@ -169,7 +165,7 @@ class CartProvider {
   // ==================== SET FEES & TAX ====================
   void setTaxRate(double rate) {
     _taxRate = rate;
-    // Notify listeners about the change
+    // Notify listeners about the change in cart
     cartNotifier.value = List.from(cartNotifier.value);
   }
 
@@ -183,8 +179,7 @@ class CartProvider {
     cartNotifier.value = List.from(cartNotifier.value);
   }
 
-  // ==================== CLEAR CART ====================
-  /// Clear entire cart
+  // Clear entire cart on pressing clear all button in cart
   void clear() {
     _restaurantId = null;
     _restaurantName = null;
@@ -195,8 +190,7 @@ class CartProvider {
     cartNotifier.value = [];
   }
 
-  // ==================== HELPER ====================
-  /// Get item by id
+  // Helper: Get item by id from cart (if exists) to update UI or logic
   CartLine? getItem(String id) {
     try {
       return cartNotifier.value.firstWhere((line) => line.item.id == id);
@@ -205,20 +199,21 @@ class CartProvider {
     }
   }
 
-  // For backward compatibility if needed
+  // For backward compatibility if needed - internal access to cart items
   List<CartLine> get _items => cartNotifier.value;
 }
 
-/// CartLine model
+// CartLine model to represent each line item in the cart
 class CartLine {
   final FoodItem item;
   int quantity;
   String? note;
-
+  // Constructor for CartLine model
   CartLine({required this.item, this.quantity = 1, this.note});
 
   double get totalPrice => item.price * quantity;
 
+  // Create a copy of CartLine with updated fields
   CartLine copyWith({int? quantity, String? note}) {
     return CartLine(
       item: item,
@@ -227,6 +222,7 @@ class CartLine {
     );
   }
 
+  //Override equality operator and hashcode for proper comparison
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
