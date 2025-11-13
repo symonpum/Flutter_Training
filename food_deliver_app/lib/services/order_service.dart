@@ -4,7 +4,9 @@ import '../models/order.dart'; // Import Order and OrderStatus
 import '../models/food_item.dart';
 
 class OrderService {
-  // Singleton pattern
+  // Singleton pattern implementation for OrderService
+  // Private constructor to prevent external instantiation
+  // and provide a single instance throughout the app
   OrderService._internal();
   static final OrderService instance = OrderService._internal();
 
@@ -12,14 +14,14 @@ class OrderService {
     return instance;
   }
 
-  // Base URL - Update this to your server URL
+  // Base URL - where the backend server is hosted (API endpoint)
   static const String baseUrl =
       'https://unledged-temple-undebilitative.ngrok-free.dev';
 
   // ==================== CREATE ORDER ====================
   static Future<Order> createOrder(Order order) async {
     try {
-      // Use the toMap() method from the Order model
+      // Use the toMap() method from the Order model to convert the order to a map
       final orderData = order.toMap();
 
       final url = Uri.parse('$baseUrl/orders');
@@ -44,6 +46,7 @@ class OrderService {
   }
 
   // ==================== GET ORDER ====================
+  // fetch order by ID from backend server (JSON response)
   static Future<Order?> getOrderById(String orderId) async {
     try {
       final url = Uri.parse('$baseUrl/orders/$orderId');
@@ -65,10 +68,7 @@ class OrderService {
     }
   }
 
-  // ======================================================
-  // === ERROR 1 FIX: ADDED MISSING updateOrderStatus  ===
-  // ======================================================
-  /// Update order status to a specific state
+  // Update order status to a specific state
   static Future<void> updateOrderStatus(String id, OrderStatus status) async {
     try {
       final url = Uri.parse('$baseUrl/orders/$id');
@@ -89,10 +89,7 @@ class OrderService {
     }
   }
 
-  // ======================================================
-  // === ERROR 2 FIX: ADDED 'pickedUp' TO SWITCH CASE ===
-  // ======================================================
-  /// Convert OrderStatus enum to string
+  // Convert OrderStatus enum to string
   static String _statusToString(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
@@ -101,7 +98,7 @@ class OrderService {
         return 'confirmed';
       case OrderStatus.preparing:
         return 'preparing';
-      case OrderStatus.pickedUp: // <-- This was the missing case
+      case OrderStatus.pickedUp:
         return 'pickedUp';
       case OrderStatus.enroute:
         return 'enroute';
@@ -109,7 +106,6 @@ class OrderService {
         return 'delivered';
       case OrderStatus.cancelled:
         return 'cancelled';
-      // No default needed because the enum is fully covered
     }
   }
 }

@@ -50,7 +50,7 @@ class RatingWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Average rating section
+            // Average rating section at the top
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -73,7 +73,7 @@ class RatingWidget extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Star breakdown chart (reversed order)
+            // Star breakdown chart (reversed order) 5 to 1
             Column(
               children: breakdown.entries.toList().reversed.map((entry) {
                 final star = entry.key;
@@ -104,7 +104,7 @@ class RatingWidget extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Reviews list
+            // Reviews list section
             if (reviews.isNotEmpty)
               Column(
                 children: reviews.map((review) {
@@ -118,7 +118,7 @@ class RatingWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header row: name + stars + rating + date
+                          // Header row: name + stars + rating + dated
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -183,7 +183,7 @@ class RatingWidget extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Write review button
+            // Write review button at the bottom, full width
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(

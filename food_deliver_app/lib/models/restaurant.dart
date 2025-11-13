@@ -1,5 +1,6 @@
 import 'food_item.dart';
 
+// Define Restaurant model to represent a restaurant
 class Restaurant {
   final String id;
   final String name;
@@ -11,19 +12,20 @@ class Restaurant {
   final int deliveryMinutes;
   final double deliveryFee;
   final double minOrder;
-  final List<String> tags; // categories from db.json
+  final List<String> tags; // categories from db.json or API
   final bool isOpen;
   final List<FoodItem> menu;
 
-  // Location
+  // Location coordinates for mapping from db.json or API
   final double lat;
   final double lng;
 
-  // Extra fields
+  // Extra fields for restaurant details to support future features
   final String phoneNumber;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  // Constructor for Restaurant model to initialize restaurant properties
   Restaurant({
     required this.id,
     required this.name,
@@ -44,7 +46,7 @@ class Restaurant {
     this.createdAt,
     this.updatedAt,
   });
-
+  // Factory method to create Restaurant instance from a map representation
   factory Restaurant.fromMap(Map<String, dynamic> m) {
     final categories =
         (m['categories'] as List<dynamic>?)
@@ -52,6 +54,7 @@ class Restaurant {
             .toList() ??
         [];
 
+    // Convert the map representation to a Restaurant instance
     return Restaurant(
       id: (m['id'] ?? '').toString(),
       name: m['name'] ?? '',

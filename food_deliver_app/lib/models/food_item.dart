@@ -19,9 +19,9 @@ class FoodItem {
   final int calories;
   final int preparationTime;
 
-  // Fields used ONLY when this FoodItem is treated as an Order/Cart Item
-  final int? quantity; // Optional field for order context
-  final String? note; // Optional field for order context
+  // ONLY use these fields when this FoodItem is treated as an Order/Cart Item
+  final int? quantity; // Optional field for order
+  final String? note; // Optional field for order
 
   FoodItem({
     required this.id,
@@ -39,11 +39,11 @@ class FoodItem {
     this.reviewCount = 0,
     this.calories = 0,
     this.preparationTime = 0,
-    this.quantity, // Added to constructor
-    this.note, // Added to constructor
+    this.quantity,
+    this.note,
   });
 
-  // Helper for total price calculation (only relevant when quantity is set)
+  // total price calculation (only relevant when quantity is set and vs.)
   double get totalPrice => price * (quantity ?? 1);
 
   // ==================== FACTORIES ====================
@@ -70,7 +70,7 @@ class FoodItem {
       preparationTime: (m['preparationTime'] is int)
           ? m['preparationTime'] as int
           : int.tryParse('${m['preparationTime']}') ?? 0,
-      // Deserialize quantity and note if present (for Order fetching)
+      // quantity and note if present (for Order fetching)
       quantity: (m['quantity'] is int)
           ? m['quantity'] as int
           : int.tryParse('${m['quantity']}') ?? null,
@@ -101,8 +101,7 @@ class FoodItem {
     'reviewCount': reviewCount,
     'calories': calories,
     'preparationTime': preparationTime,
-    // Serialize quantity and note only if they exist
-    // === FIXED: Added commas after each 'if' statement ===
+    // Serialize quantity and note only if they exist, (optional)
     if (quantity != null) 'quantity': quantity,
     if (note != null) 'note': note,
   };
@@ -111,8 +110,7 @@ class FoodItem {
 
   String toJsonString() => jsonEncode(toJson());
 
-  // ==================== COPY WITH ====================
-  // (This method was missing due to the syntax error)
+  // ==================== COPY WITH ====================s
   FoodItem copyWith({
     String? id,
     String? name,
@@ -153,7 +151,6 @@ class FoodItem {
     );
   }
 
-  // ==================== EQUALITY ====================
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -161,4 +158,4 @@ class FoodItem {
 
   @override
   int get hashCode => id.hashCode;
-} // <--- === FIXED: Added missing closing brace for the class ===
+}

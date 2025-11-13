@@ -1,7 +1,7 @@
 import 'address.dart';
 import 'food_item.dart';
 
-// === FIXED: Added 'pickedUp' ===
+// Create order status enum to track order progress
 enum OrderStatus {
   pending,
   confirmed,
@@ -12,11 +12,12 @@ enum OrderStatus {
   cancelled,
 }
 
+// Define Order model to represent a food delivery order
 class Order {
   final String id;
   final String? restaurantId;
   final String? restaurantName;
-  final List<FoodItem> items; // Uses FoodItem
+  final List<FoodItem> items; // Uses FoodItem model for order items
   final Address deliveryAddress;
   final double subtotal;
   final double deliveryFee;
@@ -24,11 +25,7 @@ class Order {
   OrderStatus status;
   final DateTime createdAt;
 
-  // Your model doesn't have these from the db.json, but they are needed for the UI
-  // You can add them here if you want to use them in the tracking screen
-  // final DateTime? estimatedDeliveryTime;
-  // final String? paymentMethod;
-
+  // Constructor for Order model to initialize order properties
   Order({
     required this.id,
     this.restaurantId,
@@ -42,6 +39,7 @@ class Order {
     required this.createdAt,
   });
 
+  // Factory method to create Order instance from a map representation
   factory Order.fromMap(Map<String, dynamic> m) {
     return Order(
       id: (m['id'] ?? '').toString(),
@@ -65,13 +63,14 @@ class Order {
     );
   }
 
+  // Order status conversion methods from/to string representation to support serialization
+  // use switch case to map string values to enum values
   static OrderStatus _statusFromString(String s) {
     switch (s) {
       case 'confirmed':
         return OrderStatus.confirmed;
       case 'preparing':
         return OrderStatus.preparing;
-      // === FIXED: Added 'pickedUp' ===
       case 'pickedUp':
         return OrderStatus.pickedUp;
       case 'enroute':
@@ -85,6 +84,7 @@ class Order {
     }
   }
 
+  // use switch case to map enum values to string values
   static String _statusToString(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
@@ -93,7 +93,6 @@ class Order {
         return 'confirmed';
       case OrderStatus.preparing:
         return 'preparing';
-      // === FIXED: Added 'pickedUp' ===
       case OrderStatus.pickedUp:
         return 'pickedUp';
       case OrderStatus.enroute:
@@ -105,6 +104,8 @@ class Order {
     }
   }
 
+  // Method to convert Order instance to a map representation for serialization
+  // maps enum status to string using _statusToString method
   Map<String, dynamic> toMap() => {
     'id': id,
     'restaurantId': restaurantId,

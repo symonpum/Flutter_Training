@@ -1,3 +1,4 @@
+// Define Review model to represent a restaurant review
 class Review {
   final String id;
   final String restaurantId;
@@ -12,6 +13,7 @@ class Review {
   final int deliverySpeed;
   final int customerService;
 
+  // Review Constructor and Methods
   Review({
     required this.id,
     required this.restaurantId,
@@ -27,6 +29,7 @@ class Review {
     required this.customerService,
   });
 
+  // Deserialize from JSON format
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'] ?? '',
@@ -44,6 +47,7 @@ class Review {
     );
   }
 
+  // Serialize to JSON format for storage
   Map<String, dynamic> toJson() {
     return {
       'id': id,

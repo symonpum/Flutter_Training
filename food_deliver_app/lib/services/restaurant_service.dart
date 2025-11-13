@@ -7,7 +7,7 @@ class RestaurantService {
   RestaurantService._internal();
   static final RestaurantService instance = RestaurantService._internal();
 
-  // Your ngrok base URL
+  //  Ngrok base URL to backend server (API endpoint) where restaurants data is hosted
   final String baseUrl =
       'https://unledged-temple-undebilitative.ngrok-free.dev';
 
@@ -58,9 +58,12 @@ class RestaurantService {
     return list;
   }
 
-  /// Fetch menu items for a given restaurant
+  // Fetch menu items for a given restaurant by restaurant ID
+  // uses /foodItems endpoint
   Future<List<FoodItem>> fetchMenuForRestaurant(String restaurantId) async {
-    // IMPORTANT: use /foodItems instead of /products
+    // in ecommerce app using products endpoint with category filter
+    // but here we use restaurantId to get menu items
+    // and foodItems endpoint
     final url = Uri.parse('$baseUrl/foodItems?restaurantId=$restaurantId');
     final res = await http.get(
       url,
@@ -75,7 +78,7 @@ class RestaurantService {
     return raw.map((m) => FoodItem.fromMap(m as Map<String, dynamic>)).toList();
   }
 
-  /// Fetch all categories across restaurants
+  /// Fetch all categories across restaurants to populate category filters
   Future<List<String>> fetchCategories() async {
     final url = Uri.parse('$baseUrl/restaurants');
     final res = await http.get(

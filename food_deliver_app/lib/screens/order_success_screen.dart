@@ -7,7 +7,7 @@ class OrderSuccessScreen extends StatelessWidget {
   final String restaurantName;
   final double total;
   final int deliveryTime;
-
+  // Constructor to accept order details to display on success screen
   const OrderSuccessScreen({
     super.key,
     required this.orderId,
@@ -19,7 +19,7 @@ class OrderSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      // Prevent back navigation to checkout
+      // Prevent back navigation to checkout after order is placed successfully
       onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
@@ -73,6 +73,7 @@ class OrderSuccessScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                // === ORDER DETAILS Card ===
                 child: Column(
                   children: [
                     _detailRow(Icons.receipt, 'Order ID', orderId),
@@ -100,18 +101,19 @@ class OrderSuccessScreen extends StatelessWidget {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    // === THIS IS THE CORRECTED NAVIGATION ===
+                    // Navigate to Order Tracking Screen
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (_) => OrderTrackingScreen(
-                            orderId: orderId, // Only pass the ID
+                            orderId:
+                                orderId, // Only pass the ID of the order to track specific order
                           ),
                         ),
                       );
                     },
-                    // ======================================
+                    // end navigation to Order Tracking Screen
                     icon: const Icon(Icons.track_changes),
                     label: const Text(
                       'Track Your Order',
@@ -133,6 +135,7 @@ class OrderSuccessScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              // Back to Home Button to clear navigation stack
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: SizedBox(
@@ -169,6 +172,7 @@ class OrderSuccessScreen extends StatelessWidget {
     );
   }
 
+  // Method to build each detail row for order summary section
   Widget _detailRow(
     IconData icon,
     String label,
